@@ -1,0 +1,1396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solar System Explorer - Detailed Planetary Analysis</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: radial-gradient(ellipse at center, #0a0e2a 0%, #050714 100%);
+            color: #fff;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            padding: 40px 0;
+            position: relative;
+        }
+        
+        h1 {
+            font-size: 3.2rem;
+            margin-bottom: 10px;
+            background: linear-gradient(to right, #4a90e2, #7b4397, #ff8c00);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: 1.5px;
+            text-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .subtitle {
+            font-size: 1.3rem;
+            color: #a0c8ff;
+            margin-bottom: 25px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.6;
+        }
+        
+        .main-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+        
+        .animation-section {
+            flex: 1;
+            min-width: 350px;
+            height: 700px;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 20px;
+            overflow: hidden;
+            background: rgba(5, 10, 30, 0.7);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(100, 150, 255, 0.1);
+        }
+        
+        .info-section {
+            flex: 1.2;
+            min-width: 350px;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+        
+        .info-tabs {
+            display: flex;
+            background: rgba(10, 20, 40, 0.8);
+            border-radius: 12px;
+            padding: 5px;
+            margin-bottom: 10px;
+            border: 1px solid rgba(100, 150, 255, 0.1);
+        }
+        
+        .tab-btn {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: #a0c8ff;
+            padding: 15px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        
+        .tab-btn.active {
+            background: linear-gradient(to right, #2a4a7a, #3a5a9a);
+            color: white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .tab-content {
+            display: none;
+            background: rgba(10, 20, 40, 0.8);
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(100, 150, 255, 0.1);
+            backdrop-filter: blur(10px);
+            height: 580px;
+            overflow-y: auto;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* Sun */
+        .sun {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, #ffd000, #ff8c00, #ff4500);
+            border-radius: 50%;
+            box-shadow: 0 0 60px #ff8c00, 0 0 120px rgba(255, 140, 0, 0.7);
+            z-index: 1;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        
+        .sun:hover {
+            transform: scale(1.1);
+        }
+        
+        .orbit {
+            position: absolute;
+            border: 1px solid rgba(100, 150, 255, 0.15);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .planet {
+            position: absolute;
+            border-radius: 50%;
+            transform-origin: center;
+            top: -10px;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            color: #000;
+        }
+        
+        .planet:hover {
+            transform: scale(1.3);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
+        }
+        
+        .planet.selected {
+            transform: scale(1.4);
+            box-shadow: 0 0 25px rgba(255, 255, 255, 1);
+            z-index: 10;
+        }
+        
+        /* Controls */
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+        
+        .control-btn {
+            background: rgba(20, 40, 80, 0.8);
+            border: 1px solid rgba(100, 150, 255, 0.3);
+            color: #a0c8ff;
+            padding: 14px 28px;
+            border-radius: 50px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+        
+        .control-btn:hover {
+            background: rgba(30, 60, 120, 0.9);
+            transform: translateY(-3px);
+            box-shadow: 0 7px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .control-btn.active {
+            background: linear-gradient(to right, #2a4a7a, #3a5a9a);
+            color: white;
+        }
+        
+        /* Timeline Section */
+        .timeline-container {
+            margin-top: 20px;
+            padding: 25px;
+            background: rgba(10, 20, 40, 0.8);
+            border-radius: 12px;
+            border: 1px solid rgba(100, 150, 255, 0.1);
+        }
+        
+        .timeline {
+            position: relative;
+            max-width: 100%;
+            margin: 20px auto;
+        }
+        
+        .timeline::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(to right, #2a4a7a, #3a5a9a);
+            top: 50%;
+            left: 0;
+            transform: translateY(-50%);
+            border-radius: 3px;
+        }
+        
+        .timeline-item {
+            padding: 10px 40px;
+            position: relative;
+            width: 50%;
+            box-sizing: border-box;
+        }
+        
+        .timeline-item:nth-child(odd) {
+            left: 0;
+        }
+        
+        .timeline-item:nth-child(even) {
+            left: 50%;
+        }
+        
+        .timeline-content {
+            padding: 20px;
+            background: rgba(20, 40, 80, 0.7);
+            border-radius: 10px;
+            border-left: 4px solid #4a90e2;
+        }
+        
+        .timeline-year {
+            font-weight: bold;
+            color: #4a90e2;
+            margin-bottom: 5px;
+        }
+        
+        /* Facts Grid */
+        .facts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 25px;
+        }
+        
+        .fact-card {
+            background: rgba(20, 40, 80, 0.6);
+            border-radius: 10px;
+            padding: 20px;
+            border-left: 4px solid #7b4397;
+        }
+        
+        .fact-title {
+            color: #a0c8ff;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .fact-content {
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+        
+        /* Planetary Details */
+        .planet-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(100, 150, 255, 0.2);
+        }
+        
+        .planet-icon {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin-right: 25px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 32px;
+            color: #000;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+        }
+        
+        .planet-title-section h2 {
+            font-size: 2.5rem;
+            margin-bottom: 5px;
+        }
+        
+        .planet-subtitle {
+            color: #a0c8ff;
+            font-size: 1.2rem;
+        }
+        
+        .planet-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-item {
+            background: rgba(20, 40, 80, 0.5);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #4a90e2;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            color: #a0c8ff;
+            font-size: 1rem;
+        }
+        
+        .planet-description {
+            line-height: 1.7;
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+            color: #e0f0ff;
+        }
+        
+        .composition-chart {
+            margin: 30px 0;
+            padding: 25px;
+            background: rgba(20, 40, 80, 0.5);
+            border-radius: 10px;
+        }
+        
+        .composition-title {
+            color: #a0c8ff;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+        
+        .composition-bar {
+            height: 25px;
+            background: rgba(100, 150, 255, 0.2);
+            border-radius: 5px;
+            margin-bottom: 15px;
+            overflow: hidden;
+        }
+        
+        .composition-fill {
+            height: 100%;
+            border-radius: 5px;
+        }
+        
+        .composition-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+        
+        /* Footer */
+        .footer {
+            text-align: center;
+            margin-top: 50px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(100, 150, 255, 0.2);
+            color: #a0c8ff;
+            font-size: 0.95rem;
+        }
+        
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .main-container {
+                flex-direction: column;
+            }
+            
+            .animation-section {
+                height: 500px;
+            }
+            
+            .tab-content {
+                height: 450px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .planet-stats {
+                grid-template-columns: 1fr;
+            }
+            
+            .timeline-item {
+                width: 100%;
+                left: 0 !important;
+                padding: 10px 0 10px 40px;
+            }
+        }
+        
+        /* Animations */
+        @keyframes orbit {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Star background */
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        
+        .star {
+            position: absolute;
+            background-color: white;
+            border-radius: 50%;
+        }
+        
+        /* Scrollbar styling */
+        .tab-content::-webkit-scrollbar {
+            width: 10px;
+        }
+        
+        .tab-content::-webkit-scrollbar-track {
+            background: rgba(20, 40, 80, 0.3);
+            border-radius: 10px;
+        }
+        
+        .tab-content::-webkit-scrollbar-thumb {
+            background: rgba(100, 150, 255, 0.5);
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Star background -->
+    <div class="stars" id="stars"></div>
+    
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-solar-system"></i> Solar System Explorer</h1>
+            <p class="subtitle">Interactive visualization with detailed planetary information, timelines, atmospheric composition, and scientific facts about our solar system</p>
+        </header>
+        
+        <div class="main-container">
+            <!-- Solar System Animation -->
+            <div class="animation-section" id="animation-container">
+                <!-- Sun -->
+                <div class="sun" id="sun" title="Click for Sun details"></div>
+                
+                <!-- Orbits and planets will be generated by JavaScript -->
+            </div>
+            
+            <!-- Information Tabs -->
+            <div class="info-section">
+                <div class="info-tabs">
+                    <button class="tab-btn active" data-tab="overview">Overview</button>
+                    <button class="tab-btn" data-tab="timeline">Discovery Timeline</button>
+                    <button class="tab-btn" data-tab="composition">Atmospheric Composition</button>
+                    <button class="tab-btn" data-tab="facts">Interesting Facts</button>
+                </div>
+                
+                <!-- Overview Tab -->
+                <div class="tab-content active" id="overview-tab">
+                    <div class="planet-header">
+                        <div class="planet-icon" id="planet-icon" style="background-color: #ff8c00;">S</div>
+                        <div class="planet-title-section">
+                            <h2 id="planet-title">Solar System</h2>
+                            <p class="planet-subtitle" id="planet-subtitle">Our planetary system in the Milky Way</p>
+                        </div>
+                    </div>
+                    
+                    <div class="planet-stats" id="planet-stats">
+                        <div class="stat-item">
+                            <div class="stat-value">8</div>
+                            <div class="stat-label">Planets</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">5</div>
+                            <div class="stat-label">Dwarf Planets</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">4.6B</div>
+                            <div class="stat-label">Years Old</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">∞</div>
+                            <div class="stat-label">Km in Diameter</div>
+                        </div>
+                    </div>
+                    
+                    <p class="planet-description" id="planet-description">
+                        Our solar system consists of the Sun and everything bound to it by gravity - eight planets, five dwarf planets, hundreds of moons, and millions of asteroids, comets, and meteoroids. It formed approximately 4.6 billion years ago from the gravitational collapse of a giant interstellar molecular cloud.
+                    </p>
+                    
+                    <div class="facts-grid" id="overview-facts">
+                        <div class="fact-card">
+                            <div class="fact-title"><i class="fas fa-sun"></i> Sun Dominance</div>
+                            <div class="fact-content">The Sun contains 99.86% of the mass in the entire solar system.</div>
+                        </div>
+                        <div class="fact-card">
+                            <div class="fact-title"><i class="fas fa-temperature-high"></i> Temperature Range</div>
+                            <div class="fact-content">Temperatures range from 5,500°C on the Sun's surface to -270°C in outer space.</div>
+                        </div>
+                        <div class="fact-card">
+                            <div class="fact-title"><i class="fas fa-expand-arrows-alt"></i> Vast Distances</div>
+                            <div class="fact-content">It would take 1.3 million Earths to fill the volume of the Sun.</div>
+                        </div>
+                        <div class="fact-card">
+                            <div class="fact-title"><i class="fas fa-rocket"></i> Space Exploration</div>
+                            <div class="fact-content">Voyager 1, launched in 1977, is the farthest human-made object from Earth.</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Timeline Tab -->
+                <div class="tab-content" id="timeline-tab">
+                    <h2 style="margin-bottom: 20px; color: #a0c8ff;">Discovery Timeline</h2>
+                    <div class="timeline" id="planet-timeline">
+                        <!-- Timeline content will be populated by JavaScript -->
+                    </div>
+                </div>
+                
+                <!-- Composition Tab -->
+                <div class="tab-content" id="composition-tab">
+                    <h2 style="margin-bottom: 20px; color: #a0c8ff;">Atmospheric Composition</h2>
+                    <div id="composition-content">
+                        <!-- Composition content will be populated by JavaScript -->
+                    </div>
+                </div>
+                
+                <!-- Facts Tab -->
+                <div class="tab-content" id="facts-tab">
+                    <h2 style="margin-bottom: 20px; color: #a0c8ff;">Interesting Planetary Facts</h2>
+                    <div id="facts-content">
+                        <!-- Facts content will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Controls -->
+        <div class="controls">
+            <button class="control-btn active" id="play-btn">
+                <i class="fas fa-play"></i> Play Animation
+            </button>
+            <button class="control-btn" id="pause-btn">
+                <i class="fas fa-pause"></i> Pause
+            </button>
+            <button class="control-btn" id="speed-up">
+                <i class="fas fa-forward"></i> Increase Speed
+            </button>
+            <button class="control-btn" id="speed-down">
+                <i class="fas fa-backward"></i> Decrease Speed
+            </button>
+            <button class="control-btn" id="real-scale">
+                <i class="fas fa-ruler-combined"></i> Real Scale
+            </button>
+            <button class="control-btn" id="reset-view">
+                <i class="fas fa-globe-americas"></i> Reset View
+            </button>
+        </div>
+        
+        <!-- Footer -->
+        <div class="footer">
+            <p>Solar System Explorer | Data Sources: NASA, ESA, International Astronomical Union</p>
+            <p>Planet sizes and distances are not to scale for visualization purposes | Created for educational use</p>
+        </div>
+    </div>
+
+    <script>
+        // Enhanced Solar System Data with timelines, compositions, and facts
+        const solarSystemData = {
+            sun: {
+                name: "Sun",
+                type: "Yellow Dwarf Star",
+                color: "#ff8c00",
+                radius: 100,
+                description: "The Sun is a nearly perfect sphere of hot plasma at the center of our solar system. It accounts for about 99.86% of the total mass of the Solar System and provides the energy necessary for life on Earth through nuclear fusion in its core.",
+                timeline: [
+                    { year: "Ancient Times", event: "Recognized as a distinct celestial body by ancient civilizations" },
+                    { year: "1610", event: "Galileo Galilei observes sunspots, challenging the idea of a perfect Sun" },
+                    { year: "1868", event: "Helium first discovered in the Sun's spectrum before being found on Earth" },
+                    { year: "1938", event: "Hans Bethe describes the proton-proton chain reaction powering the Sun" },
+                    { year: "1995", event: "SOHO spacecraft launched to study the Sun's interior and atmosphere" }
+                ],
+                composition: [
+                    { element: "Hydrogen", percentage: 74, color: "#FF6B6B" },
+                    { element: "Helium", percentage: 24, color: "#4ECDC4" },
+                    { element: "Oxygen", percentage: 0.8, color: "#FFD166" },
+                    { element: "Carbon", percentage: 0.3, color: "#06D6A0" },
+                    { element: "Other", percentage: 0.9, color: "#118AB2" }
+                ],
+                facts: [
+                    "The Sun is about 4.6 billion years old and halfway through its main-sequence lifetime.",
+                    "It takes about 8 minutes and 20 seconds for light from the Sun to reach Earth.",
+                    "The Sun's core temperature is about 15 million degrees Celsius (27 million degrees Fahrenheit).",
+                    "Solar flares can release energy equivalent to millions of 100-megaton hydrogen bombs.",
+                    "The Sun rotates faster at its equator (25 days) than at its poles (35 days)."
+                ],
+                stats: [
+                    { label: "Diameter", value: "1,391,000 km" },
+                    { label: "Mass", value: "1.989 × 10³⁰ kg" },
+                    { label: "Surface Temp", value: "5,500°C" },
+                    { label: "Core Temp", value: "15,000,000°C" },
+                    { label: "Rotation Period", value: "25-35 days" },
+                    { label: "Luminosity", value: "3.828×10²⁶ W" }
+                ]
+            },
+            planets: [
+                {
+                    name: "Mercury",
+                    color: "#8c8c8c",
+                    radius: 12,
+                    distance: 140,
+                    orbitPeriod: 4,
+                    icon: "☿",
+                    type: "Terrestrial Planet",
+                    description: "Mercury is the smallest and innermost planet in the Solar System. It has no atmosphere to retain heat, leading to extreme temperature variations between day (427°C) and night (-173°C). Its surface is heavily cratered and resembles Earth's Moon.",
+                    timeline: [
+                        { year: "3000 BCE", event: "Known to ancient Sumerians who called it 'Ubu-idim-gud-ud'" },
+                        { year: "265 BCE", event: "Greek astronomer Timocharis makes first recorded observation" },
+                        { year: "1631", event: "Pierre Gassendi observes Mercury transit across the Sun" },
+                        { year: "1965", event: "Radar observations determine Mercury's rotation period (59 days)" },
+                        { year: "1974-75", event: "Mariner 10 makes three flybys, mapping 45% of surface" },
+                        { year: "2011", event: "MESSENGER becomes first spacecraft to orbit Mercury" }
+                    ],
+                    composition: [
+                        { element: "Oxygen", percentage: 42, color: "#FF6B6B" },
+                        { element: "Sodium", percentage: 29, color: "#4ECDC4" },
+                        { element: "Hydrogen", percentage: 22, color: "#FFD166" },
+                        { element: "Helium", percentage: 6, color: "#06D6A0" },
+                        { element: "Potassium", percentage: 1, color: "#118AB2" }
+                    ],
+                    facts: [
+                        "Mercury has the most eccentric orbit of all planets (0.2056 eccentricity).",
+                        "A day on Mercury (sunrise to sunrise) lasts 176 Earth days.",
+                        "Despite being closest to the Sun, Venus is hotter due to its thick atmosphere.",
+                        "Mercury has a large iron core that makes up about 85% of its radius.",
+                        "The planet's surface temperature can vary by 600°C between day and night."
+                    ],
+                    stats: [
+                        { label: "Diameter", value: "4,879 km" },
+                        { label: "Mass", value: "3.30 × 10²³ kg" },
+                        { label: "Orbital Period", value: "88 Earth days" },
+                        { label: "Rotation Period", value: "59 Earth days" },
+                        { label: "Surface Gravity", value: "3.7 m/s²" },
+                        { label: "Avg Temperature", value: "167°C" }
+                    ]
+                },
+                {
+                    name: "Venus",
+                    color: "#e6b87e",
+                    radius: 18,
+                    distance: 190,
+                    orbitPeriod: 8,
+                    icon: "♀",
+                    type: "Terrestrial Planet",
+                    description: "Venus is the second planet from the Sun and is similar in size and mass to Earth. It has the densest atmosphere of the four terrestrial planets, consisting of more than 96% carbon dioxide. The atmospheric pressure at the planet's surface is 92 times that of Earth.",
+                    timeline: [
+                        { year: "1600 BCE", event: "Babylonian astronomers record Venus observations" },
+                        { year: "1610", event: "Galileo observes Venus phases, supporting heliocentric model" },
+                        { year: "1761", event: "Mikhail Lomonosov discovers Venusian atmosphere" },
+                        { year: "1962", event: "Mariner 2 becomes first successful Venus flyby mission" },
+                        { year: "1970", event: "Venera 7 makes first successful landing on another planet" },
+                        { year: "1990", event: "Magellan spacecraft maps 98% of Venus surface with radar" }
+                    ],
+                    composition: [
+                        { element: "Carbon Dioxide", percentage: 96.5, color: "#FF6B6B" },
+                        { element: "Nitrogen", percentage: 3.5, color: "#4ECDC4" },
+                        { element: "Sulfur Dioxide", percentage: 0.015, color: "#FFD166" },
+                        { element: "Argon", percentage: 0.007, color: "#06D6A0" },
+                        { element: "Water Vapor", percentage: 0.002, color: "#118AB2" }
+                    ],
+                    facts: [
+                        "Venus rotates in the opposite direction to most planets (retrograde rotation).",
+                        "A day on Venus (243 Earth days) is longer than its year (225 Earth days).",
+                        "Venus is the brightest natural object in the night sky after the Moon.",
+                        "The surface temperature is hot enough to melt lead (462°C average).",
+                        "Venus has no moons and no magnetic field."
+                    ],
+                    stats: [
+                        { label: "Diameter", value: "12,104 km" },
+                        { label: "Mass", value: "4.87 × 10²⁴ kg" },
+                        { label: "Orbital Period", value: "225 Earth days" },
+                        { label: "Rotation Period", value: "243 Earth days" },
+                        { label: "Surface Pressure", value: "92 bar" },
+                        { label: "Avg Temperature", value: "462°C" }
+                    ]
+                },
+                {
+                    name: "Earth",
+                    color: "#6b93d6",
+                    radius: 19,
+                    distance: 240,
+                    orbitPeriod: 12,
+                    icon: "🜨",
+                    type: "Terrestrial Planet",
+                    description: "Earth is the third planet from the Sun and the only astronomical object known to harbor life. About 71% of Earth's surface is covered with water, mostly by oceans. The remaining 29% is land consisting of continents and islands. Earth's atmosphere consists mostly of nitrogen and oxygen.",
+                    timeline: [
+                        { year: "4.54B BCE", event: "Earth forms from accretion of solar nebula" },
+                        { year: "4.0B BCE", event: "First evidence of life appears (microbial mats)" },
+                        { year: "2.4B BCE", event: "Great Oxygenation Event transforms atmosphere" },
+                        { year: "541M BCE", event: "Cambrian explosion - rapid diversification of life" },
+                        { year: "66M BCE", event: "Cretaceous–Paleogene extinction event kills dinosaurs" },
+                        { year: "1961", event: "Yuri Gagarin becomes first human in space" },
+                        { year: "1969", event: "Apollo 11 - First humans land on the Moon" }
+                    ],
+                    composition: [
+                        { element: "Nitrogen", percentage: 78, color: "#FF6B6B" },
+                        { element: "Oxygen", percentage: 21, color: "#4ECDC4" },
+                        { element: "Argon", percentage: 0.93, color: "#FFD166" },
+                        { element: "Carbon Dioxide", percentage: 0.04, color: "#06D6A0" },
+                        { element: "Other", percentage: 0.03, color: "#118AB2" }
+                    ],
+                    facts: [
+                        "Earth is the only planet not named after a Greek or Roman deity.",
+                        "71% of Earth's surface is covered by water, earning it the nickname 'Blue Planet'.",
+                        "Earth's magnetic field protects life from harmful solar radiation.",
+                        "The planet's rotation is gradually slowing at about 17 milliseconds per century.",
+                        "Earth has one natural satellite, the Moon, which stabilizes its axial tilt."
+                    ],
+                    stats: [
+                        { label: "Diameter", value: "12,742 km" },
+                        { label: "Mass", value: "5.97 × 10²⁴ kg" },
+                        { label: "Orbital Period", value: "365.25 days" },
+                        { label: "Rotation Period", value: "23h 56m" },
+                        { label: "Surface Gravity", value: "9.8 m/s²" },
+                        { label: "Avg Temperature", value: "15°C" }
+                    ]
+                },
+                {
+                    name: "Mars",
+                    color: "#c1440e",
+                    radius: 16,
+                    distance: 290,
+                    orbitPeriod: 18,
+                    icon: "♂",
+                    type: "Terrestrial Planet",
+                    description: "Mars is the fourth planet from the Sun and the second-smallest planet in the Solar System. It is often called the 'Red Planet' due to its reddish appearance caused by iron oxide (rust) on its surface. Mars has polar ice caps, valleys, deserts, and extinct volcanoes, including Olympus Mons, the largest volcano in the Solar System.",
+                    timeline: [
+                        { year: "1534 BCE", event: "Ancient Egyptian astronomers document Mars' motion" },
+                        { year: "1609", event: "Johannes Kepler uses Mars observations to formulate laws of planetary motion" },
+                        { year: "1877", event: "Asaph Hall discovers Mars' moons Phobos and Deimos" },
+                        { year: "1965", event: "Mariner 4 performs first successful Mars flyby" },
+                        { year: "1976", event: "Viking 1 and 2 landers provide first surface data" },
+                        { year: "2012", event: "Curiosity rover lands in Gale Crater" },
+                        { year: "2021", event: "Perseverance rover lands with Ingenuity helicopter" }
+                    ],
+                    composition: [
+                        { element: "Carbon Dioxide", percentage: 95, color: "#FF6B6B" },
+                        { element: "Nitrogen", percentage: 2.7, color: "#4ECDC4" },
+                        { element: "Argon", percentage: 1.6, color: "#FFD166" },
+                        { element: "Oxygen", percentage: 0.13, color: "#06D6A0" },
+                        { element: "Other", percentage: 0.57, color: "#118AB2" }
+                    ],
+                    facts: [
+                        "Mars has the largest dust storms in the Solar System, lasting for months.",
+                        "Olympus Mons on Mars is the largest volcano in the Solar System (21 km high).",
+                        "Mars' moon Phobos orbits so close it rises and sets twice each Martian day.",
+                        "Liquid water likely existed on Mars' surface in the ancient past.",
+                        "Mars has seasons like Earth due to its similar axial tilt (25.2°)."
+                    ],
+                    stats: [
+                        { label: "Diameter", value: "6,779 km" },
+                        { label: "Mass", value: "6.42 × 10²³ kg" },
+                        { label: "Orbital Period", value: "687 Earth days" },
+                        { label: "Rotation Period", value: "24h 37m" },
+                        { label: "Surface Gravity", value: "3.7 m/s²" },
+                        { label: "Avg Temperature", value: "-63°C" }
+                    ]
+                },
+                {
+                    name: "Jupiter",
+                    color: "#e0aa70",
+                    radius: 45,
+                    distance: 380,
+                    orbitPeriod: 24,
+                    icon: "♃",
+                    type: "Gas Giant",
+                    description: "Jupiter is the fifth planet from the Sun and the largest in the Solar System. It is a gas giant with a mass one-thousandth that of the Sun, but two-and-a-half times that of all the other planets in the Solar System combined. Jupiter's prominent Great Red Spot is a giant storm that has been observed since 1830.",
+                    timeline: [
+                        { year: "7th-8th BCE", event: "Babylonian astronomers record Jupiter's movements" },
+                        { year: "1610", event: "Galileo discovers Jupiter's four largest moons" },
+                        { year: "1665", event: "Giovanni Cassini observes Jupiter's Great Red Spot" },
+                        { year: "1973", event: "Pioneer 10 becomes first spacecraft to visit Jupiter" },
+                        { year: "1995", event: "Galileo spacecraft arrives and deploys atmospheric probe" },
+                        { year: "2016", event: "Juno spacecraft enters polar orbit around Jupiter" }
+                    ],
+                    composition: [
+                        { element: "Hydrogen", percentage: 90, color: "#FF6B6B" },
+                        { element: "Helium", percentage: 10, color: "#4ECDC4" },
+                        { element: "Methane", percentage: 0.3, color: "#FFD166" },
+                        { element: "Ammonia", percentage: 0.026, color: "#06D6A0" },
+                        { element: "Other", percentage: 0.004, color: "#118AB2" }
+                    ],
+                    facts: [
+                        "Jupiter's mass is 2.5 times that of all other planets combined.",
+                        "The Great Red Spot has been raging for at least 350 years.",
+                        "Jupiter has 79 known moons, the largest being Ganymede (bigger than Mercury).",
+                        "Jupiter's magnetic field is 14 times stronger than Earth's.",
+                        "Despite its size, Jupiter has the shortest day of all planets (9h 56m)."
+                    ],
+                    stats: [
+                        { label: "Diameter", value: "139,820 km" },
+                        { label: "Mass", value: "1.90 × 10²⁷ kg" },
+                        { label: "Orbital Period", value: "12 Earth years" },
+                        { label: "Rotation Period", value: "9h 56m" },
+                        { label: "Surface Gravity", value: "24.8 m/s²" },
+                        { label: "Avg Temperature", value: "-108°C" }
+                    ]
+                },
+                {
+                    name: "Saturn",
+                    color: "#fad5a5",
+                    radius: 40,
+                    distance: 460,
+                    orbitPeriod: 30,
+                    icon: "♄",
+                    type: "Gas Giant",
+                    description: "Saturn is the sixth planet from the Sun and the second-largest in the Solar System. It is a gas giant with an average radius about nine times that of Earth. Saturn is best known for its prominent ring system, which is composed mainly of ice particles with a smaller amount of rocky debris and dust. Saturn has 82 confirmed moons, the most in the Solar System.",
+                    timeline: [
+                        { year: "700 BCE", event: "Assyrian astronomers describe Saturn as a 'sparkle in the night'" },
+                        { year: "1610", event: "Galileo first observes Saturn's rings but misinterprets them" },
+                        { year: "1655", event: "Christiaan Huygens correctly identifies Saturn's rings" },
+                        { year: "1979", event: "Pioneer 11 becomes first spacecraft to visit Saturn" },
+                        { year: "2004", event: "Cassini-Huygens arrives at Saturn system" },
+                        { year: "2005", event: "Huygens probe lands on Titan, Saturn's largest moon" },
+                        { year: "2017", event: "Cassini mission ends with deliberate plunge into Saturn" }
+                    ],
+                    composition: [
+                        { element: "Hydrogen", percentage: 96, color: "#FF6B6B" },
+                        { element: "Helium", percentage: 3, color: "#4ECDC4" },
+                        { element: "Methane", percentage: 0.4, color: "#FFD166" },
+                        { element: "Ammonia", percentage: 0.01, color: "#06D6A0" },
+                        { element: "Other", percentage: 0.59, color: "#118AB2" }
+                    ],
+                    facts: [
+                        "Saturn is the least dense planet in the Solar System (could float on water).",
+                        "Saturn's rings are only about 20 meters thick but span 282,000 km.",
+                        "Titan, Saturn's largest moon, has a thick atmosphere and liquid hydrocarbon lakes.",
+                        "Saturn experiences huge hexagonal-shaped storms at its north pole.",
+                        "The planet's winds are the second fastest in the Solar System (1,800 km/h)."
+                    ],
+                    stats: [
+                        { label: "Diameter", value: "116,460 km" },
+                        { label: "Mass", value: "5.68 × 10²⁶ kg" },
+                        { label: "Orbital Period", value: "29.5 Earth years" },
+                        { label: "Rotation Period", value: "10h 34m" },
+                        { label: "Surface Gravity", value: "10.4 m/s²" },
+                        { label: "Avg Temperature", value: "-139°C" }
+                    ]
+                },
+                {
+                    name: "Uranus",
+                    color: "#d1e7e7",
+                    radius: 32,
+                    distance: 540,
+                    orbitPeriod: 36,
+                    icon: "♅",
+                    type: "Ice Giant",
+                    description: "Uranus is the seventh planet from the Sun. It has the third-largest planetary radius and fourth-largest planetary mass in the Solar System. Uranus is similar in composition to Neptune, and both have different bulk chemical composition from that of the larger gas giants Jupiter and Saturn. Uranus rotates on its side, with an axial tilt of 97.77 degrees.",
+                    timeline: [
+                        { year: "1781", event: "William Herschel discovers Uranus, first planet discovered with a telescope" },
+                        { year: "1787", event: "William Herschel discovers Uranus' two largest moons, Titania and Oberon" },
+                        { year: "1948", event: "Gerard Kuiper discovers Uranus' moon Miranda" },
+                        { year: "1977", event: "James Elliot discovers Uranus' rings during stellar occultation" },
+                        { year: "1986", event: "Voyager 2 becomes only spacecraft to visit Uranus" },
+                        { year: "2005", event: "Hubble discovers two additional rings around Uranus" }
+                    ],
+                    composition: [
+                        { element: "Hydrogen", percentage: 83, color: "#FF6B6B" },
+                        { element: "Helium", percentage: 15, color: "#4ECDC4" },
+                        { element: "Methane", percentage: 2.3, color: "#FFD166" },
+                        { element: "Hydrogen Deuteride", percentage: 0.009, color: "#06D6A0" },
+                        { element: "Other", percentage: 0.001, color: "#118AB2" }
+                    ],
+                    facts: [
+                        "Uranus rotates on its side with an axial tilt of 97.77°, causing extreme seasons.",
+                        "Uranus is the coldest planet in the Solar System (-224°C minimum temperature).",
+                        "The planet was originally named 'George's Star' after King George III of England.",
+                        "Uranus has 13 known rings, which are dark and composed of large particles.",
+                        "Uranus' moon Miranda has one of the most extreme topographies in the Solar System."
+                    ],
+                    stats: [
+                        { label: "Diameter", value: "50,724 km" },
+                        { label: "Mass", value: "8.68 × 10²⁵ kg" },
+                        { label: "Orbital Period", value: "84 Earth years" },
+                        { label: "Rotation Period", value: "17h 14m" },
+                        { label: "Surface Gravity", value: "8.7 m/s²" },
+                        { label: "Avg Temperature", value: "-195°C" }
+                    ]
+                },
+                {
+                    name: "Neptune",
+                    color: "#5b5bff",
+                    radius: 31,
+                    distance: 620,
+                    orbitPeriod: 42,
+                    icon: "♆",
+                    type: "Ice Giant",
+                    description: "Neptune is the eighth and farthest-known Solar planet from the Sun. In the Solar System, it is the fourth-largest planet by diameter, the third-most-massive planet, and the densest giant planet. Neptune is 17 times the mass of Earth and is slightly more massive than its near-twin Uranus. Neptune has the strongest sustained winds of any planet in the Solar System.",
+                    timeline: [
+                        { year: "1612", event: "Galileo observes Neptune but mistakes it for a fixed star" },
+                        { year: "1846", event: "Johann Galle discovers Neptune based on Urbain Le Verrier's calculations" },
+                        { year: "1846", event: "William Lassell discovers Neptune's largest moon, Triton" },
+                        { year: "1984", event: "Partial rings (arcs) discovered around Neptune" },
+                        { year: "1989", event: "Voyager 2 becomes only spacecraft to visit Neptune" },
+                        { year: "2003", event: "Hubble discovers five new moons orbiting Neptune" },
+                        { year: "2013", event: "Neptune completes first full orbit since its discovery in 1846" }
+                    ],
+                    composition: [
+                        { element: "Hydrogen", percentage: 80, color: "#FF6B6B" },
+                        { element: "Helium", percentage: 19, color: "#4ECDC4" },
+                        { element: "Methane", percentage: 1.5, color: "#FFD166" },
+                        { element: "Hydrogen Deuteride", percentage: 0.019, color: "#06D6A0" },
+                        { element: "Ethane", percentage: 0.00015, color: "#118AB2" }
+                    ],
+                    facts: [
+                        "Neptune was the first planet located through mathematical predictions.",
+                        "Neptune's winds are the fastest in the Solar System, reaching 2,100 km/h.",
+                        "Triton, Neptune's largest moon, orbits in the opposite direction to Neptune's rotation.",
+                        "Neptune radiates 2.6 times more energy than it receives from the Sun.",
+                        "The planet's Great Dark Spot was a storm the size of Earth that disappeared by 1994."
+                    ],
+                    stats: [
+                        { label: "Diameter", value: "49,244 km" },
+                        { label: "Mass", value: "1.02 × 10²⁶ kg" },
+                        { label: "Orbital Period", value: "165 Earth years" },
+                        { label: "Rotation Period", value: "16h 6m" },
+                        { label: "Surface Gravity", value: "11.2 m/s²" },
+                        { label: "Avg Temperature", value: "-201°C" }
+                    ]
+                }
+            ]
+        };
+
+        // Animation variables
+        let animationSpeed = 1;
+        let isAnimating = true;
+        let animationId = null;
+        let selectedPlanet = solarSystemData.sun;
+        let isRealScale = false;
+
+        // Initialize the solar system
+        function initSolarSystem() {
+            const container = document.getElementById('animation-container');
+            
+            // Create orbits and planets
+            solarSystemData.planets.forEach((planet, index) => {
+                // Create orbit
+                const orbit = document.createElement('div');
+                orbit.className = 'orbit';
+                orbit.style.width = `${planet.distance * 2}px`;
+                orbit.style.height = `${planet.distance * 2}px`;
+                orbit.style.animation = `orbit ${planet.orbitPeriod / animationSpeed}s linear infinite`;
+                
+                // Create planet
+                const planetEl = document.createElement('div');
+                planetEl.className = 'planet';
+                planetEl.id = `planet-${index}`;
+                planetEl.style.width = `${planet.radius}px`;
+                planetEl.style.height = `${planet.radius}px`;
+                planetEl.style.backgroundColor = planet.color;
+                planetEl.style.left = `${planet.distance}px`;
+                planetEl.textContent = planet.icon;
+                planetEl.style.fontSize = `${Math.max(planet.radius / 1.5, 16)}px`;
+                
+                // Add event listener to planet
+                planetEl.addEventListener('click', () => selectPlanet(planet));
+                
+                orbit.appendChild(planetEl);
+                container.appendChild(orbit);
+                
+                // Start planet in a random position
+                planetEl.style.transform = `rotate(${Math.random() * 360}deg) translate(${planet.distance}px) rotate(-${Math.random() * 360}deg)`;
+            });
+            
+            // Add event listener to the sun
+            const sun = document.getElementById('sun');
+            sun.addEventListener('click', () => selectPlanet(solarSystemData.sun));
+            
+            // Start animation
+            animatePlanets();
+            
+            // Initialize tabs
+            initTabs();
+            
+            // Load Sun data initially
+            updatePlanetInfo(solarSystemData.sun);
+        }
+
+        // Animate planets in their orbits
+        function animatePlanets() {
+            if (!isAnimating) return;
+            
+            const planets = document.querySelectorAll('.planet');
+            planets.forEach((planet, index) => {
+                const data = solarSystemData.planets[index];
+                const currentRotation = parseFloat(planet.style.transform.match(/rotate\(([^)]+)deg\)/)?.[1] || 0);
+                const newRotation = (currentRotation + (0.5 * animationSpeed)) % 360;
+                
+                planet.style.transform = `rotate(${newRotation}deg) translate(${data.distance}px) rotate(-${newRotation}deg)`;
+            });
+            
+            animationId = requestAnimationFrame(animatePlanets);
+        }
+
+        // Initialize tab functionality
+        function initTabs() {
+            const tabBtns = document.querySelectorAll('.tab-btn');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const tabId = btn.getAttribute('data-tab');
+                    
+                    // Update active tab button
+                    tabBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    
+                    // Show selected tab content
+                    tabContents.forEach(content => {
+                        content.classList.remove('active');
+                    });
+                    document.getElementById(`${tabId}-tab`).classList.add('active');
+                    
+                    // Update tab content based on selected planet
+                    updateTabContent(tabId);
+                });
+            });
+        }
+
+        // Select a planet and show its information
+        function selectPlanet(planet) {
+            selectedPlanet = planet;
+            
+            // Update planet selection styling
+            document.querySelectorAll('.planet').forEach(p => {
+                p.classList.remove('selected');
+            });
+            
+            if (planet !== solarSystemData.sun) {
+                const planetIndex = solarSystemData.planets.findIndex(p => p.name === planet.name);
+                if (planetIndex !== -1) {
+                    const planetEl = document.getElementById(`planet-${planetIndex}`);
+                    planetEl.classList.add('selected');
+                }
+            }
+            
+            // Update planet information
+            updatePlanetInfo(planet);
+            
+            // Update current active tab content
+            const activeTab = document.querySelector('.tab-btn.active').getAttribute('data-tab');
+            updateTabContent(activeTab);
+        }
+
+        // Update planet information in the overview tab
+        function updatePlanetInfo(planet) {
+            // Update header
+            document.getElementById('planet-title').textContent = planet.name;
+            document.getElementById('planet-subtitle').textContent = planet.type;
+            document.getElementById('planet-icon').style.backgroundColor = planet.color;
+            document.getElementById('planet-icon').textContent = planet.icon;
+            document.getElementById('planet-description').textContent = planet.description;
+            
+            // Update stats
+            const statsContainer = document.getElementById('planet-stats');
+            statsContainer.innerHTML = '';
+            
+            if (planet.stats) {
+                planet.stats.forEach(stat => {
+                    const statItem = document.createElement('div');
+                    statItem.className = 'stat-item';
+                    
+                    const statValue = document.createElement('div');
+                    statValue.className = 'stat-value';
+                    statValue.textContent = stat.value;
+                    
+                    const statLabel = document.createElement('div');
+                    statLabel.className = 'stat-label';
+                    statLabel.textContent = stat.label;
+                    
+                    statItem.appendChild(statValue);
+                    statItem.appendChild(statLabel);
+                    statsContainer.appendChild(statItem);
+                });
+            }
+            
+            // Update overview facts
+            const overviewFacts = document.getElementById('overview-facts');
+            overviewFacts.innerHTML = '';
+            
+            if (planet.facts) {
+                // Show first 4 facts
+                const factsToShow = planet.facts.slice(0, 4);
+                factsToShow.forEach(fact => {
+                    const factCard = document.createElement('div');
+                    factCard.className = 'fact-card';
+                    
+                    const factTitle = document.createElement('div');
+                    factTitle.className = 'fact-title';
+                    factTitle.innerHTML = `<i class="fas fa-info-circle"></i> ${planet.name} Fact`;
+                    
+                    const factContent = document.createElement('div');
+                    factContent.className = 'fact-content';
+                    factContent.textContent = fact;
+                    
+                    factCard.appendChild(factTitle);
+                    factCard.appendChild(factContent);
+                    overviewFacts.appendChild(factCard);
+                });
+            }
+        }
+
+        // Update content for the active tab
+        function updateTabContent(tabId) {
+            switch(tabId) {
+                case 'timeline':
+                    updateTimelineTab();
+                    break;
+                case 'composition':
+                    updateCompositionTab();
+                    break;
+                case 'facts':
+                    updateFactsTab();
+                    break;
+            }
+        }
+
+        // Update timeline tab with planet's discovery timeline
+        function updateTimelineTab() {
+            const timelineContainer = document.getElementById('planet-timeline');
+            timelineContainer.innerHTML = '';
+            
+            if (selectedPlanet.timeline) {
+                selectedPlanet.timeline.forEach((item, index) => {
+                    const timelineItem = document.createElement('div');
+                    timelineItem.className = 'timeline-item';
+                    
+                    const timelineContent = document.createElement('div');
+                    timelineContent.className = 'timeline-content';
+                    
+                    const year = document.createElement('div');
+                    year.className = 'timeline-year';
+                    year.textContent = item.year;
+                    
+                    const event = document.createElement('div');
+                    event.textContent = item.event;
+                    
+                    timelineContent.appendChild(year);
+                    timelineContent.appendChild(event);
+                    timelineItem.appendChild(timelineContent);
+                    timelineContainer.appendChild(timelineItem);
+                });
+            }
+        }
+
+        // Update composition tab with planet's atmospheric composition
+        function updateCompositionTab() {
+            const compositionContainer = document.getElementById('composition-content');
+            compositionContainer.innerHTML = '';
+            
+            if (selectedPlanet.composition) {
+                // Create composition chart
+                const compositionChart = document.createElement('div');
+                compositionChart.className = 'composition-chart';
+                
+                const compositionTitle = document.createElement('div');
+                compositionTitle.className = 'composition-title';
+                compositionTitle.innerHTML = `<i class="fas fa-chart-pie"></i> ${selectedPlanet.name}'s Atmospheric Composition`;
+                compositionChart.appendChild(compositionTitle);
+                
+                // Add composition bars
+                selectedPlanet.composition.forEach(item => {
+                    const compositionLabel = document.createElement('div');
+                    compositionLabel.className = 'composition-label';
+                    compositionLabel.innerHTML = `<span>${item.element}</span><span>${item.percentage}%</span>`;
+                    
+                    const compositionBar = document.createElement('div');
+                    compositionBar.className = 'composition-bar';
+                    
+                    const compositionFill = document.createElement('div');
+                    compositionFill.className = 'composition-fill';
+                    compositionFill.style.width = `${item.percentage}%`;
+                    compositionFill.style.backgroundColor = item.color;
+                    
+                    compositionBar.appendChild(compositionFill);
+                    
+                    compositionChart.appendChild(compositionLabel);
+                    compositionChart.appendChild(compositionBar);
+                });
+                
+                compositionContainer.appendChild(compositionChart);
+                
+                // Add note for terrestrial planets without substantial atmosphere
+                if (selectedPlanet.name === "Mercury") {
+                    const note = document.createElement('p');
+                    note.style.marginTop = '20px';
+                    note.style.color = '#a0c8ff';
+                    note.textContent = "Note: Mercury has a very thin exosphere rather than a substantial atmosphere. The composition shown represents this exosphere.";
+                    compositionContainer.appendChild(note);
+                }
+            }
+        }
+
+        // Update facts tab with interesting planet facts
+        function updateFactsTab() {
+            const factsContainer = document.getElementById('facts-content');
+            factsContainer.innerHTML = '';
+            
+            if (selectedPlanet.facts) {
+                const factsGrid = document.createElement('div');
+                factsGrid.className = 'facts-grid';
+                
+                selectedPlanet.facts.forEach((fact, index) => {
+                    const factCard = document.createElement('div');
+                    factCard.className = 'fact-card';
+                    
+                    const factTitle = document.createElement('div');
+                    factTitle.className = 'fact-title';
+                    factTitle.innerHTML = `<i class="fas fa-star"></i> Fact ${index + 1}`;
+                    
+                    const factContent = document.createElement('div');
+                    factContent.className = 'fact-content';
+                    factContent.textContent = fact;
+                    
+                    factCard.appendChild(factTitle);
+                    factCard.appendChild(factContent);
+                    factsGrid.appendChild(factCard);
+                });
+                
+                factsContainer.appendChild(factsGrid);
+            }
+        }
+
+        // Control functions
+        function playAnimation() {
+            if (!isAnimating) {
+                isAnimating = true;
+                document.getElementById('play-btn').classList.add('active');
+                document.getElementById('pause-btn').classList.remove('active');
+                animatePlanets();
+            }
+        }
+
+        function pauseAnimation() {
+            isAnimating = false;
+            document.getElementById('play-btn').classList.remove('active');
+            document.getElementById('pause-btn').classList.add('active');
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+            }
+        }
+
+        function increaseSpeed() {
+            animationSpeed = Math.min(animationSpeed * 2, 8);
+            updateOrbitSpeeds();
+        }
+
+        function decreaseSpeed() {
+            animationSpeed = Math.max(animationSpeed / 2, 0.25);
+            updateOrbitSpeeds();
+        }
+
+        function updateOrbitSpeeds() {
+            const orbits = document.querySelectorAll('.orbit');
+            orbits.forEach((orbit, index) => {
+                const period = solarSystemData.planets[index].orbitPeriod / animationSpeed;
+                orbit.style.animationDuration = `${period}s`;
+            });
+        }
+
+        function toggleRealScale() {
+            isRealScale = !isRealScale;
+            const btn = document.getElementById('real-scale');
+            
+            if (isRealScale) {
+                btn.classList.add('active');
+                btn.innerHTML = '<i class="fas fa-compress-arrows-alt"></i> Visual Scale';
+                // In a real implementation, this would adjust planet sizes and distances
+                alert("Note: Real scale mode would show planets and distances to scale, but for visualization purposes, we're keeping the visual scale. In reality, if the Sun were 100px, Earth would be 0.9px and 10,800px away!");
+            } else {
+                btn.classList.remove('active');
+                btn.innerHTML = '<i class="fas fa-ruler-combined"></i> Real Scale';
+            }
+        }
+
+        function resetView() {
+            // Reset to solar system view
+            selectPlanet(solarSystemData.sun);
+            
+            // Reset animation speed
+            animationSpeed = 1;
+            updateOrbitSpeeds();
+            
+            // Ensure animation is playing
+            playAnimation();
+        }
+
+        // Create star background
+        function createStars() {
+            const starsContainer = document.getElementById('stars');
+            const starCount = 300;
+            
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                
+                const size = Math.random() * 3;
+                star.style.width = `${size}px`;
+                star.style.height = `${size}px`;
+                
+                star.style.left = `${Math.random() * 100}%`;
+                star.style.top = `${Math.random() * 100}%`;
+                
+                star.style.opacity = Math.random() * 0.7 + 0.3;
+                
+                // Add twinkling animation
+                if (Math.random() > 0.7) {
+                    star.style.animation = `twinkle ${Math.random() * 3 + 2}s infinite alternate`;
+                }
+                
+                starsContainer.appendChild(star);
+            }
+        }
+
+        // Initialize everything when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            createStars();
+            initSolarSystem();
+            
+            // Set up control buttons
+            document.getElementById('play-btn').addEventListener('click', playAnimation);
+            document.getElementById('pause-btn').addEventListener('click', pauseAnimation);
+            document.getElementById('speed-up').addEventListener('click', increaseSpeed);
+            document.getElementById('speed-down').addEventListener('click', decreaseSpeed);
+            document.getElementById('real-scale').addEventListener('click', toggleRealScale);
+            document.getElementById('reset-view').addEventListener('click', resetView);
+            
+            // Add CSS for twinkling stars
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes twinkle {
+                    0% { opacity: 0.3; }
+                    100% { opacity: 1; }
+                }
+            `;
+            document.head.appendChild(style);
+        });
+    </script>
+</body>
+</html>
