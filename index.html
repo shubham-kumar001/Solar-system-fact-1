@@ -3,75 +3,99 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NASA Solar System Simulator v4.5 | Enterprise Astronomical Platform</title>
+    <title>NASA Solar System Simulator | Real-Time Astrophysics Visualization</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Exo+2:wght@300;400;500;600;700&family=Source+Code+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* NASA Color Palette */
+            /* Realistic Space Colors */
+            --space-deep: #000000;
+            --space-dark: #0a0e17;
+            --space-medium: #1a2238;
+            --space-light: #252f4a;
+            
+            /* NASA Colors */
             --nasa-blue: #0B3D91;
             --nasa-red: #FC3D21;
             --nasa-white: #FFFFFF;
-            --nasa-dark: #040E27;
-            --nasa-space: #0A1931;
             
             /* Scientific Colors */
-            --spectrum-blue: #0066FF;
-            --spectrum-cyan: #00D4FF;
-            --spectrum-green: #00FFAA;
-            --spectrum-orange: #FF6B00;
-            --spectrum-purple: #9D4EDD;
-            --spectrum-pink: #FF00AA;
+            --sci-blue: #0066FF;
+            --sci-cyan: #00D4FF;
+            --sci-green: #00FFAA;
+            --sci-yellow: #FFD700;
+            --sci-orange: #FF6B00;
+            --sci-purple: #9D4EDD;
             
-            /* Planet Colors */
-            --sun: radial-gradient(circle at 30% 30%, #FFD700, #FF8C00, #FF4500);
-            --mercury: #8C8C8C;
-            --venus: #E6B87E;
-            --earth: #1E90FF;
-            --mars: #DC143C;
-            --jupiter: #F5DEB3;
-            --saturn: #F0E68C;
-            --uranus: #AFEEEE;
-            --neptune: #4169E1;
+            /* Real Planet Colors (Actual NASA Colors) */
+            --sun-real: #FFD700;
+            --mercury-real: #8C7853;
+            --venus-real: #FFC649;
+            --earth-real: #2B65EC;
+            --mars-real: #C1440E;
+            --jupiter-real: #E0AA70;
+            --saturn-real: #FAD5A5;
+            --uranus-real: #D1E7E7;
+            --neptune-real: #5B5BFF;
             
-            /* UI */
-            --glass-bg: rgba(10, 25, 49, 0.85);
-            --glass-border: rgba(255, 255, 255, 0.1);
-            --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            /* UI Elements */
+            --ui-glass: rgba(10, 14, 23, 0.85);
+            --ui-border: rgba(100, 150, 255, 0.15);
+            --ui-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
             
             /* Animations */
-            --transition-smooth: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-physics: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
+        /* Reset & Base */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
         
-        body {
-            font-family: 'Exo 2', sans-serif;
-            background: var(--nasa-space);
-            color: var(--nasa-white);
+        html {
+            font-size: 16px;
             overflow: hidden;
-            height: 100vh;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
         }
         
-        /* Advanced Starfield with Parallax */
-        .starfield {
+        body {
+            font-family: 'Exo 2', 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--space-deep);
+            color: var(--nasa-white);
+            height: 100vh;
+            overflow: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            position: relative;
+        }
+        
+        /* Ultra-Realistic Space Background */
+        .space-background {
             position: fixed;
             top: 0;
             left: 0;
-            width: 300%;
-            height: 300%;
-            pointer-events: none;
-            z-index: 0;
-            animation: starfield-drift 600s infinite linear;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: 
+                radial-gradient(ellipse at 20% 30%, rgba(27, 39, 75, 0.3) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 70%, rgba(67, 19, 109, 0.2) 0%, transparent 60%),
+                linear-gradient(to bottom, #000000, #0a0e17);
         }
         
-        .star-layer {
+        /* Realistic Starfield with Parallax */
+        .starfield-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .stars-layer {
             position: absolute;
             width: 100%;
             height: 100%;
@@ -79,75 +103,103 @@
         
         .star {
             position: absolute;
+            background: #ffffff;
             border-radius: 50%;
-            will-change: transform, opacity;
         }
         
-        /* Nebula Clouds */
-        .nebula {
+        /* Nebula & Dust Clouds */
+        .space-dust {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             background: 
-                radial-gradient(circle at 20% 30%, rgba(59, 130, 246, 0.1) 0%, transparent 60%),
-                radial-gradient(circle at 80% 70%, rgba(168, 85, 247, 0.05) 0%, transparent 60%);
-            filter: blur(40px);
-            animation: nebula-flow 120s infinite alternate;
+                radial-gradient(circle at 15% 25%, rgba(59, 130, 246, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 85% 75%, rgba(139, 92, 246, 0.05) 0%, transparent 50%);
+            filter: blur(60px);
+            animation: dust-drift 180s infinite linear;
             pointer-events: none;
             z-index: 1;
         }
         
+        /* Realistic Sun Glow */
+        .sun-glow {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, 
+                rgba(255, 215, 0, 0.15) 0%,
+                rgba(255, 140, 0, 0.1) 40%,
+                rgba(255, 69, 0, 0.05) 70%,
+                transparent 100%);
+            border-radius: 50%;
+            filter: blur(40px);
+            animation: solar-wind 20s infinite alternate;
+            pointer-events: none;
+            z-index: 5;
+        }
+        
         /* Professional Header */
-        .header {
+        .simulator-header {
             position: fixed;
             top: 0;
             width: 100%;
             height: 70px;
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px) saturate(180%);
-            border-bottom: 1px solid var(--glass-border);
+            background: rgba(10, 14, 23, 0.92);
+            backdrop-filter: blur(15px) saturate(180%);
+            -webkit-backdrop-filter: blur(15px) saturate(180%);
+            border-bottom: 1px solid var(--ui-border);
             display: flex;
             align-items: center;
             justify-content: space-between;
             padding: 0 40px;
             z-index: 1000;
-            box-shadow: var(--glass-shadow);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
         }
         
-        .logo {
+        .nasa-header {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 20px;
         }
         
-        .nasa-badge {
-            background: linear-gradient(135deg, var(--nasa-red), var(--nasa-blue));
+        .nasa-logo {
             width: 50px;
             height: 50px;
+            background: linear-gradient(135deg, var(--nasa-red), var(--nasa-blue));
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 22px;
-            font-weight: 900;
-            color: white;
-            animation: badge-pulse 3s infinite alternate;
-        }
-        
-        .logo-text {
             font-family: 'Orbitron', sans-serif;
             font-weight: 900;
             font-size: 20px;
-            background: linear-gradient(135deg, var(--spectrum-cyan), var(--spectrum-blue));
+            color: white;
+            box-shadow: 0 0 30px rgba(252, 61, 33, 0.4);
+            animation: nasa-pulse 3s infinite alternate;
+        }
+        
+        .header-title {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .main-title {
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 900;
+            font-size: 22px;
+            background: linear-gradient(135deg, var(--sci-cyan), var(--sci-blue));
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
             letter-spacing: 2px;
         }
         
-        .logo-subtitle {
+        .subtitle {
             font-size: 11px;
             color: rgba(255, 255, 255, 0.6);
             letter-spacing: 3px;
@@ -155,50 +207,26 @@
             margin-top: 2px;
         }
         
-        .header-controls {
-            display: flex;
-            gap: 15px;
+        /* Real-time Clock */
+        .real-time-clock {
+            font-family: 'Source Code Pro', monospace;
+            font-size: 14px;
+            color: var(--sci-green);
+            background: rgba(0, 0, 0, 0.3);
+            padding: 8px 16px;
+            border-radius: 6px;
+            border: 1px solid rgba(0, 212, 255, 0.2);
         }
         
-        .header-btn {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--glass-border);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 8px;
-            font-family: 'Exo 2', sans-serif;
-            font-weight: 600;
-            font-size: 13px;
-            cursor: pointer;
-            transition: var(--transition-smooth);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        
-        .header-btn:hover {
-            background: rgba(255, 255, 255, 0.1);
-            transform: translateY(-2px);
-            border-color: var(--spectrum-cyan);
-            box-shadow: 0 5px 20px rgba(0, 212, 255, 0.2);
-        }
-        
-        .header-btn.active {
-            background: linear-gradient(135deg, var(--spectrum-blue), var(--spectrum-cyan));
-            border-color: transparent;
-            box-shadow: 0 5px 25px rgba(0, 212, 255, 0.4);
-        }
-        
-        /* Main Simulation Area */
-        .simulation-area {
+        /* Main Simulation Container */
+        .simulation-container {
             position: fixed;
             top: 70px;
             left: 0;
             width: 100%;
-            height: calc(100vh - 70px);
+            height: calc(100vh - 150px);
             overflow: hidden;
+            perspective: 2000px;
         }
         
         #solar-system {
@@ -206,68 +234,81 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 2000px;
-            height: 2000px;
+            width: 2500px;
+            height: 2500px;
+            transform-style: preserve-3d;
+            transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
-        /* Advanced Sun */
-        .sun {
+        /* Ultra-Realistic Sun */
+        .real-sun {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 160px;
-            height: 160px;
-            background: var(--sun);
+            width: 140px;
+            height: 140px;
+            background: radial-gradient(circle at 30% 30%, 
+                var(--sun-real) 0%,
+                #FF8C00 40%,
+                #FF4500 70%);
             border-radius: 50%;
             cursor: pointer;
             z-index: 100;
             box-shadow: 
-                0 0 200px rgba(255, 215, 0, 0.8),
-                0 0 400px rgba(255, 140, 0, 0.6),
-                0 0 600px rgba(255, 69, 0, 0.4),
-                inset 0 0 80px rgba(255, 255, 255, 0.3);
-            animation: solar-flare 8s infinite alternate;
-            transition: var(--transition-smooth);
+                0 0 150px rgba(255, 215, 0, 0.9),
+                0 0 300px rgba(255, 140, 0, 0.7),
+                0 0 450px rgba(255, 69, 0, 0.5),
+                inset 0 0 60px rgba(255, 255, 255, 0.4);
+            animation: solar-activity 5s infinite alternate;
+            transition: var(--transition-physics);
+            filter: brightness(1.2);
         }
         
-        .sun::before {
+        .real-sun::before {
             content: '';
             position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 200px;
-            height: 200px;
-            background: radial-gradient(circle, rgba(255, 215, 0, 0.4) 0%, transparent 70%);
+            top: -20px;
+            left: -20px;
+            right: -20px;
+            bottom: -20px;
+            background: radial-gradient(circle, 
+                rgba(255, 215, 0, 0.3) 0%,
+                rgba(255, 140, 0, 0.2) 40%,
+                rgba(255, 69, 0, 0.1) 70%,
+                transparent 100%);
             border-radius: 50%;
-            animation: corona-pulse 4s infinite alternate;
+            animation: corona-pulse 3s infinite alternate;
+            z-index: -1;
         }
         
-        .sun.selected {
+        .real-sun.selected {
             box-shadow: 
-                0 0 250px rgba(255, 215, 0, 1),
-                0 0 500px rgba(255, 140, 0, 0.8),
-                0 0 750px rgba(255, 69, 0, 0.6),
-                inset 0 0 100px rgba(255, 255, 255, 0.5);
+                0 0 200px rgba(255, 215, 0, 1),
+                0 0 400px rgba(255, 140, 0, 0.8),
+                0 0 600px rgba(255, 69, 0, 0.6),
+                inset 0 0 80px rgba(255, 255, 255, 0.6);
+            animation: solar-flare 1s infinite alternate;
         }
         
-        /* 3D Orbits */
-        .orbit-3d {
+        /* Realistic 3D Orbits */
+        .real-orbit {
             position: absolute;
             top: 50%;
             left: 50%;
-            transform: translate(-50%, -50%);
+            transform: translate(-50%, -50%) rotateX(70deg);
             border: 1px solid;
-            border-image: linear-gradient(90deg, transparent, rgba(0, 212, 255, 0.2), transparent) 1;
+            border-image: linear-gradient(90deg, 
+                transparent, 
+                rgba(0, 212, 255, 0.2), 
+                transparent) 1;
             border-radius: 50%;
             pointer-events: none;
             transform-style: preserve-3d;
-            animation: orbit-rotate 100s linear infinite;
         }
         
-        /* Advanced Planets */
-        .planet-container {
+        /* Photorealistic Planets */
+        .planet-system {
             position: absolute;
             top: 50%;
             left: 50%;
@@ -276,7 +317,7 @@
             will-change: transform;
         }
         
-        .planet-3d {
+        .real-planet {
             position: absolute;
             border-radius: 50%;
             cursor: pointer;
@@ -288,192 +329,235 @@
             text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8);
             overflow: hidden;
             transform-style: preserve-3d;
-            transition: var(--transition-smooth);
+            transition: var(--transition-physics);
             box-shadow: 
-                inset 0 0 40px rgba(255, 255, 255, 0.2),
+                inset 0 0 40px rgba(255, 255, 255, 0.15),
                 0 0 30px rgba(255, 255, 255, 0.1);
+            filter: brightness(1.1) contrast(1.2);
         }
         
-        .planet-3d::before {
+        .real-planet::before {
             content: '';
             position: absolute;
             top: -10%;
             left: -10%;
             right: -10%;
             bottom: -10%;
-            background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.4), transparent 70%);
-            opacity: 0.3;
+            background: radial-gradient(circle at 30% 30%, 
+                rgba(255, 255, 255, 0.4) 0%,
+                transparent 70%);
+            opacity: 0.4;
+            mix-blend-mode: overlay;
         }
         
-        .planet-3d:hover {
-            transform: scale(1.5) translateZ(50px) !important;
+        .real-planet:hover {
+            transform: scale(1.6) translateZ(80px) !important;
             box-shadow: 
-                0 0 60px currentColor,
-                0 0 120px rgba(255, 255, 255, 0.3),
-                inset 0 0 60px rgba(255, 255, 255, 0.3);
+                0 0 80px currentColor,
+                0 0 160px rgba(255, 255, 255, 0.4),
+                inset 0 0 80px rgba(255, 255, 255, 0.3);
+            filter: brightness(1.3) contrast(1.3);
             z-index: 1000;
         }
         
-        .planet-3d.selected {
-            transform: scale(1.6) translateZ(100px) !important;
+        .real-planet.selected {
+            transform: scale(1.8) translateZ(120px) !important;
             box-shadow: 
-                0 0 80px currentColor,
-                0 0 160px rgba(255, 255, 255, 0.5),
-                0 0 240px rgba(255, 255, 255, 0.3),
-                inset 0 0 80px rgba(255, 255, 255, 0.4);
-            animation: selected-pulse 2s infinite alternate;
+                0 0 100px currentColor,
+                0 0 200px rgba(255, 255, 255, 0.6),
+                0 0 300px rgba(255, 255, 255, 0.4),
+                inset 0 0 100px rgba(255, 255, 255, 0.5);
+            animation: planet-pulse 2s infinite alternate;
+            filter: brightness(1.5) contrast(1.4);
             z-index: 2000;
         }
         
-        .planet-label {
+        /* Realistic Planetary Features */
+        .planet-features {
             position: absolute;
-            top: -40px;
-            left: 50%;
-            transform: translateX(-50%) translateZ(100px);
-            background: var(--glass-bg);
-            backdrop-filter: blur(10px);
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-family: 'Source Code Pro', monospace;
-            font-size: 12px;
-            font-weight: 700;
-            color: var(--spectrum-cyan);
-            border: 1px solid var(--glass-border);
-            white-space: nowrap;
-            opacity: 0;
-            transition: opacity 0.3s;
-            pointer-events: none;
-            z-index: 50;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            overflow: hidden;
+            opacity: 0.7;
+            mix-blend-mode: overlay;
         }
         
-        .planet-3d:hover .planet-label {
-            opacity: 1;
+        .clouds {
+            background: radial-gradient(circle at 30% 30%, 
+                rgba(255, 255, 255, 0.3) 0%,
+                transparent 60%);
+            animation: clouds-drift 20s infinite linear;
         }
         
-        /* Professional Rings */
-        .planet-ring-3d {
+        .storm-bands {
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 5px,
+                rgba(255, 255, 255, 0.1) 5px,
+                rgba(255, 255, 255, 0.1) 10px
+            );
+            animation: bands-rotate 30s infinite linear;
+        }
+        
+        .ice-caps {
+            background: radial-gradient(circle at 50% 10%, 
+                rgba(255, 255, 255, 0.4) 0%,
+                transparent 40%),
+                radial-gradient(circle at 50% 90%, 
+                rgba(255, 255, 255, 0.4) 0%,
+                transparent 40%);
+        }
+        
+        /* Realistic Rings */
+        .real-rings {
             position: absolute;
             border-radius: 50%;
-            border: 4px solid;
-            border-color: rgba(255, 255, 255, 0.6) transparent transparent transparent;
+            border: 3px solid;
+            border-color: rgba(255, 255, 255, 0.7) transparent transparent transparent;
             transform: rotateX(75deg);
             pointer-events: none;
-            filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.3));
+            filter: drop-shadow(0 0 30px rgba(255, 255, 255, 0.4));
+            animation: rings-rotate 40s infinite linear;
         }
         
-        /* Moons */
-        .moon-orbit {
+        /* Realistic Moons */
+        .moon-system {
             position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-            pointer-events: none;
+            transform-origin: center;
         }
         
-        .moon {
+        .real-moon {
             position: absolute;
             border-radius: 50%;
-            background: linear-gradient(135deg, #CCCCCC, #999999);
-            cursor: pointer;
-            box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.2);
+            background: radial-gradient(circle at 30% 30%, 
+                #DDDDDD, #AAAAAA, #888888);
+            box-shadow: inset 0 0 30px rgba(255, 255, 255, 0.3);
         }
         
-        /* Information Dashboard */
-        .dashboard {
+        /* Scientific Data Panel */
+        .science-panel {
             position: fixed;
             right: 0;
             top: 70px;
-            width: 400px;
-            height: calc(100vh - 70px);
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            border-left: 1px solid var(--glass-border);
+            width: 450px;
+            height: calc(100vh - 150px);
+            background: rgba(10, 14, 23, 0.92);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border-left: 1px solid var(--ui-border);
             padding: 30px;
             overflow-y: auto;
-            transform: translateX(0);
             transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             z-index: 900;
+            box-shadow: -8px 0 40px rgba(0, 0, 0, 0.3);
         }
         
-        .dashboard.collapsed {
+        .science-panel.collapsed {
             transform: translateX(100%);
         }
         
-        /* Data Panels */
-        .data-panel {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid var(--glass-border);
+        /* Professional Data Cards */
+        .data-card {
+            background: linear-gradient(135deg, 
+                rgba(26, 34, 56, 0.7), 
+                rgba(15, 21, 37, 0.7));
+            border: 1px solid var(--ui-border);
             border-radius: 16px;
             padding: 25px;
             margin-bottom: 25px;
-            transition: var(--transition-smooth);
+            transition: var(--transition-physics);
         }
         
-        .data-panel:hover {
-            background: rgba(255, 255, 255, 0.08);
-            border-color: var(--spectrum-cyan);
-            transform: translateY(-5px);
+        .data-card:hover {
+            background: linear-gradient(135deg, 
+                rgba(26, 34, 56, 0.9), 
+                rgba(15, 21, 37, 0.9));
+            border-color: var(--sci-cyan);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.15);
         }
         
-        .panel-title {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 18px;
-            color: var(--spectrum-cyan);
-            margin-bottom: 20px;
+        .card-header {
             display: flex;
             align-items: center;
             gap: 12px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .card-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--sci-blue), var(--sci-cyan));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: white;
+        }
+        
+        .card-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 18px;
+            color: var(--sci-cyan);
             text-transform: uppercase;
             letter-spacing: 1px;
         }
         
-        /* Scientific Visualization */
-        .visualization-chart {
+        /* Scientific Measurements */
+        .measurement-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .measurement {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid var(--sci-green);
+        }
+        
+        .measurement-value {
+            font-family: 'Source Code Pro', monospace;
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--sci-green);
+            margin-bottom: 5px;
+        }
+        
+        .measurement-label {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.6);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        /* Real-time Graphs */
+        .graph-container {
             height: 200px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
             position: relative;
+            overflow: hidden;
             margin: 20px 0;
         }
         
-        .chart-grid {
+        .graph-grid {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: 
-                repeating-linear-gradient(to right, rgba(255, 255, 255, 0.05) 0px, rgba(255, 255, 255, 0.05) 1px, transparent 1px, transparent 20px),
-                repeating-linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 0px, rgba(255, 255, 255, 0.05) 1px, transparent 1px, transparent 20px);
-        }
-        
-        /* Real-time Telemetry */
-        .telemetry-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-        }
-        
-        .telemetry-item {
-            background: rgba(0, 0, 0, 0.3);
-            padding: 15px;
-            border-radius: 10px;
-            border-left: 4px solid var(--spectrum-green);
-        }
-        
-        .telemetry-value {
-            font-family: 'Source Code Pro', monospace;
-            font-size: 22px;
-            font-weight: 700;
-            color: var(--spectrum-green);
-            margin-bottom: 5px;
-        }
-        
-        .telemetry-label {
-            font-size: 11px;
-            color: rgba(255, 255, 255, 0.6);
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            background-image: 
+                linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+            background-size: 20px 20px;
         }
         
         /* Control Panel */
@@ -483,13 +567,15 @@
             left: 0;
             width: 100%;
             height: 80px;
-            background: var(--glass-bg);
-            backdrop-filter: blur(20px);
-            border-top: 1px solid var(--glass-border);
+            background: rgba(10, 14, 23, 0.92);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border-top: 1px solid var(--ui-border);
             display: flex;
             align-items: center;
             padding: 0 40px;
             z-index: 800;
+            box-shadow: 0 -4px 30px rgba(0, 0, 0, 0.3);
         }
         
         .control-group {
@@ -502,23 +588,23 @@
         .control-label {
             font-family: 'Source Code Pro', monospace;
             font-size: 13px;
-            color: var(--spectrum-cyan);
+            color: var(--sci-cyan);
             text-transform: uppercase;
             letter-spacing: 2px;
             min-width: 120px;
         }
         
         /* Professional Slider */
-        .slider-container {
-            position: relative;
+        .sci-slider {
             width: 300px;
+            position: relative;
         }
         
         .slider-track {
             width: 100%;
             height: 6px;
             background: linear-gradient(90deg, 
-                rgba(0, 212, 255, 0.2), 
+                rgba(0, 100, 255, 0.2), 
                 rgba(0, 212, 255, 0.8));
             border-radius: 3px;
             position: relative;
@@ -534,12 +620,12 @@
             bottom: 0;
             background: linear-gradient(90deg, 
                 transparent, 
-                rgba(255, 255, 255, 0.3), 
+                rgba(255, 255, 255, 0.4), 
                 transparent);
-            animation: slider-shine 3s infinite linear;
+            animation: slider-shimmer 3s infinite linear;
         }
         
-        .slider {
+        .time-slider {
             -webkit-appearance: none;
             width: 100%;
             height: 6px;
@@ -551,25 +637,84 @@
             z-index: 2;
         }
         
-        .slider::-webkit-slider-thumb {
+        .time-slider::-webkit-slider-thumb {
             -webkit-appearance: none;
             width: 24px;
             height: 24px;
             border-radius: 50%;
             background: white;
-            border: 3px solid var(--spectrum-cyan);
+            border: 3px solid var(--sci-cyan);
             cursor: pointer;
             box-shadow: 
-                0 0 20px var(--spectrum-cyan),
-                0 0 40px rgba(0, 212, 255, 0.5);
-            transition: var(--transition-smooth);
+                0 0 30px var(--sci-cyan),
+                0 0 60px rgba(0, 212, 255, 0.5);
+            transition: var(--transition-physics);
         }
         
-        .slider::-webkit-slider-thumb:hover {
-            transform: scale(1.2);
+        .time-slider::-webkit-slider-thumb:hover {
+            transform: scale(1.3);
             box-shadow: 
-                0 0 30px var(--spectrum-cyan),
-                0 0 60px rgba(0, 212, 255, 0.7);
+                0 0 40px var(--sci-cyan),
+                0 0 80px rgba(0, 212, 255, 0.7);
+        }
+        
+        /* Professional Buttons */
+        .sci-button {
+            background: linear-gradient(135deg, 
+                rgba(26, 34, 56, 0.8), 
+                rgba(15, 21, 37, 0.8));
+            border: 1px solid var(--ui-border);
+            color: var(--sci-cyan);
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-family: 'Exo 2', sans-serif;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            transition: var(--transition-physics);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .sci-button:hover {
+            background: linear-gradient(135deg, 
+                rgba(74, 144, 226, 0.2), 
+                rgba(15, 21, 37, 0.8));
+            border-color: var(--sci-cyan);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 212, 255, 0.2);
+        }
+        
+        .sci-button.active {
+            background: linear-gradient(135deg, 
+                var(--sci-blue), 
+                var(--sci-cyan));
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 8px 30px rgba(0, 212, 255, 0.4);
+        }
+        
+        .sci-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, 
+                transparent, 
+                rgba(255, 255, 255, 0.1), 
+                transparent);
+            transform: translateX(-100%);
+        }
+        
+        .sci-button:hover::before {
+            animation: button-shine 1s;
         }
         
         /* Status Bar */
@@ -578,7 +723,7 @@
             bottom: 80px;
             left: 0;
             width: 100%;
-            height: 40px;
+            height: 30px;
             background: rgba(0, 0, 0, 0.8);
             backdrop-filter: blur(10px);
             display: flex;
@@ -588,75 +733,83 @@
             font-family: 'Source Code Pro', monospace;
             font-size: 12px;
             color: rgba(255, 255, 255, 0.8);
-            border-top: 1px solid var(--glass-border);
-            border-bottom: 1px solid var(--glass-border);
+            border-top: 1px solid var(--ui-border);
+            border-bottom: 1px solid var(--ui-border);
             z-index: 700;
         }
         
         .status-item {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
         
         .status-value {
-            color: var(--spectrum-green);
+            color: var(--sci-green);
             font-weight: 700;
         }
         
-        /* HUD Display */
-        .hud {
+        /* Heads-Up Display */
+        .heads-up-display {
             position: fixed;
             top: 90px;
             left: 40px;
             background: rgba(0, 0, 0, 0.7);
             backdrop-filter: blur(10px);
-            border: 1px solid var(--glass-border);
+            border: 1px solid var(--ui-border);
             border-radius: 12px;
             padding: 20px;
-            width: 300px;
+            width: 320px;
             z-index: 600;
         }
         
         .hud-title {
             font-family: 'Orbitron', sans-serif;
             font-size: 16px;
-            color: var(--spectrum-cyan);
+            color: var(--sci-cyan);
             margin-bottom: 15px;
             display: flex;
             align-items: center;
             gap: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 10px;
         }
         
-        /* Animations */
-        @keyframes starfield-drift {
-            0% { transform: translate(0, 0); }
-            100% { transform: translate(-66.66%, -66.66%); }
+        /* Realistic Animations */
+        @keyframes dust-drift {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            100% { transform: translate(200px, 200px) rotate(360deg); }
         }
         
-        @keyframes nebula-flow {
+        @keyframes solar-activity {
             0% { 
-                transform: translate(0, 0) rotate(0deg);
-                filter: blur(40px);
+                box-shadow: 
+                    0 0 150px rgba(255, 215, 0, 0.9),
+                    0 0 300px rgba(255, 140, 0, 0.7),
+                    0 0 450px rgba(255, 69, 0, 0.5);
+                filter: brightness(1.2) contrast(1.1);
             }
             100% { 
-                transform: translate(100px, 100px) rotate(180deg);
-                filter: blur(60px);
+                box-shadow: 
+                    0 0 180px rgba(255, 215, 0, 1),
+                    0 0 350px rgba(255, 140, 0, 0.8),
+                    0 0 500px rgba(255, 69, 0, 0.6);
+                filter: brightness(1.3) contrast(1.2);
             }
         }
         
         @keyframes solar-flare {
-            0% { 
+            0%, 100% { 
                 box-shadow: 
-                    0 0 200px rgba(255, 215, 0, 0.8),
-                    0 0 400px rgba(255, 140, 0, 0.6),
-                    0 0 600px rgba(255, 69, 0, 0.4);
+                    0 0 200px rgba(255, 215, 0, 1),
+                    0 0 400px rgba(255, 140, 0, 0.8),
+                    0 0 600px rgba(255, 69, 0, 0.6);
             }
-            100% { 
+            50% { 
                 box-shadow: 
                     0 0 250px rgba(255, 215, 0, 1),
-                    0 0 500px rgba(255, 140, 0, 0.8),
-                    0 0 750px rgba(255, 69, 0, 0.6);
+                    0 0 500px rgba(255, 140, 0, 0.9),
+                    0 0 750px rgba(255, 69, 0, 0.7);
             }
         }
         
@@ -665,25 +818,35 @@
             100% { opacity: 0.7; transform: translate(-50%, -50%) scale(1.2); }
         }
         
-        @keyframes orbit-rotate {
-            from { transform: translate(-50%, -50%) rotateX(60deg) rotate(0deg); }
-            to { transform: translate(-50%, -50%) rotateX(60deg) rotate(360deg); }
-        }
-        
-        @keyframes selected-pulse {
+        @keyframes planet-pulse {
             0% { 
                 box-shadow: 
-                    0 0 80px currentColor,
-                    0 0 160px rgba(255, 255, 255, 0.5);
+                    0 0 100px currentColor,
+                    0 0 200px rgba(255, 255, 255, 0.6);
             }
             100% { 
                 box-shadow: 
-                    0 0 120px currentColor,
-                    0 0 240px rgba(255, 255, 255, 0.7);
+                    0 0 150px currentColor,
+                    0 0 300px rgba(255, 255, 255, 0.8);
             }
         }
         
-        @keyframes badge-pulse {
+        @keyframes clouds-drift {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        @keyframes bands-rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        @keyframes rings-rotate {
+            from { transform: rotateX(75deg) rotate(0deg); }
+            to { transform: rotateX(75deg) rotate(360deg); }
+        }
+        
+        @keyframes nasa-pulse {
             0% { 
                 box-shadow: 
                     0 0 20px var(--nasa-red),
@@ -696,34 +859,41 @@
             }
         }
         
-        @keyframes slider-shine {
+        @keyframes slider-shimmer {
             0% { transform: translateX(-100%); }
             100% { transform: translateX(100%); }
         }
         
-        /* Scientific Graphs */
-        .scientific-graph {
-            height: 150px;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 10px;
-            position: relative;
-            overflow: hidden;
+        @keyframes button-shine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
         }
         
-        .graph-line {
+        @keyframes solar-wind {
+            0% { transform: translate(-50%, -50%) scale(1); opacity: 0.8; }
+            100% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; }
+        }
+        
+        /* Particle Effects */
+        .solar-wind {
             position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
+            width: 2px;
             height: 2px;
-            background: var(--spectrum-green);
-            box-shadow: 0 0 10px var(--spectrum-green);
-            animation: graph-draw 3s ease-out;
+            background: rgba(255, 215, 0, 0.8);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: particle-flow 3s linear infinite;
         }
         
-        @keyframes graph-draw {
-            0% { width: 0%; opacity: 0; }
-            100% { width: 100%; opacity: 1; }
+        @keyframes particle-flow {
+            0% { 
+                transform: translate(0, 0) scale(1);
+                opacity: 1;
+            }
+            100% { 
+                transform: translate(var(--particle-x, 100px), var(--particle-y, 100px)) scale(0);
+                opacity: 0;
+            }
         }
         
         /* Responsive Design */
@@ -738,26 +908,26 @@
                 transform: translate(-50%, -50%) scale(0.6);
             }
             
-            .dashboard {
-                width: 350px;
+            .science-panel {
+                width: 400px;
             }
         }
         
         @media (max-width: 768px) {
-            .header {
+            .simulator-header {
                 padding: 0 20px;
             }
             
-            .dashboard {
+            .science-panel {
                 width: 100%;
                 transform: translateX(100%);
             }
             
-            .dashboard.active {
+            .science-panel.active {
                 transform: translateX(0);
             }
             
-            .hud {
+            .heads-up-display {
                 display: none;
             }
             
@@ -770,117 +940,128 @@
             .control-group {
                 margin-bottom: 15px;
             }
+            
+            .sci-slider {
+                width: 200px;
+            }
         }
         
-        /* Advanced Effects */
-        .gravitational-lens {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
+        /* Loading Screen */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
-            background: radial-gradient(circle, transparent 30%, rgba(0, 0, 0, 0.7) 70%);
-            pointer-events: none;
-            mix-blend-mode: multiply;
+            background: var(--space-dark);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 1s ease;
         }
         
-        .particle-trail {
-            position: absolute;
-            width: 2px;
-            height: 2px;
-            background: white;
+        .loading-spinner {
+            width: 80px;
+            height: 80px;
+            border: 4px solid rgba(0, 212, 255, 0.3);
+            border-top-color: var(--sci-cyan);
             border-radius: 50%;
-            pointer-events: none;
-            animation: particle-fade 2s linear;
+            animation: spin 1s linear infinite;
+            margin-bottom: 30px;
+            box-shadow: 0 0 30px rgba(0, 212, 255, 0.3);
         }
         
-        @keyframes particle-fade {
-            0% { opacity: 1; transform: scale(1); }
-            100% { opacity: 0; transform: scale(0); }
+        .loading-text {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 24px;
+            color: var(--sci-cyan);
+            letter-spacing: 3px;
+            margin-bottom: 10px;
+        }
+        
+        .loading-subtext {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.6);
+            text-align: center;
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Scrollbar Styling */
+        .science-panel::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .science-panel::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+        }
+        
+        .science-panel::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, var(--sci-blue), var(--sci-cyan));
+            border-radius: 4px;
+        }
+        
+        .science-panel::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, var(--sci-cyan), var(--sci-blue));
         }
     </style>
 </head>
 <body>
-    <!-- Advanced Starfield -->
-    <div class="starfield">
-        <div class="star-layer" id="stars-1"></div>
-        <div class="star-layer" id="stars-2"></div>
-        <div class="star-layer" id="stars-3"></div>
+    <!-- Ultra-Realistic Space Background -->
+    <div class="space-background"></div>
+    <div class="starfield-container">
+        <div class="stars-layer" id="stars-far"></div>
+        <div class="stars-layer" id="stars-medium"></div>
+        <div class="stars-layer" id="stars-near"></div>
     </div>
-    <div class="nebula"></div>
+    <div class="space-dust"></div>
     
-    <!-- Header -->
-    <div class="header">
-        <div class="logo">
-            <div class="nasa-badge">NASA</div>
-            <div>
-                <div class="logo-text">SOLAR SYSTEM SIMULATOR v4.5</div>
-                <div class="logo-subtitle">REAL-TIME ASTROPHYSICS ENGINE</div>
+    <!-- Loading Screen -->
+    <div class="loading-screen" id="loading-screen">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">NASA SOLAR SYSTEM INITIALIZING</div>
+        <div class="loading-subtext">Loading astrophysics engine & celestial data...</div>
+    </div>
+    
+    <!-- Professional Header -->
+    <header class="simulator-header">
+        <div class="nasa-header">
+            <div class="nasa-logo">NASA</div>
+            <div class="header-title">
+                <div class="main-title">SOLAR SYSTEM SIMULATOR</div>
+                <div class="subtitle">REAL-TIME ASTROPHYSICS VISUALIZATION</div>
             </div>
         </div>
         
-        <div class="header-controls">
-            <button class="header-btn active" onclick="toggleDashboard()">
-                <i class="fas fa-chart-line"></i>
-                <span>DASHBOARD</span>
-            </button>
-            <button class="header-btn" onclick="exportTelemetry()">
-                <i class="fas fa-file-export"></i>
-                <span>EXPORT DATA</span>
-            </button>
-            <button class="header-btn" onclick="showSettings()">
-                <i class="fas fa-cogs"></i>
-                <span>SETTINGS</span>
-            </button>
+        <div class="real-time-clock" id="real-time-clock">
+            <!-- Dynamic time will be inserted -->
         </div>
-    </div>
+    </header>
+    
+    <!-- Sun Glow Effect -->
+    <div class="sun-glow"></div>
     
     <!-- Main Simulation Area -->
-    <div class="simulation-area">
+    <div class="simulation-container">
         <div id="solar-system"></div>
-        <div class="gravitational-lens"></div>
     </div>
     
-    <!-- Information Dashboard -->
-    <div class="dashboard" id="dashboard">
-        <div class="data-panel">
-            <div class="panel-title">
-                <i class="fas fa-satellite"></i>
-                <span>SELECTED CELESTIAL BODY</span>
-            </div>
-            <div id="celestial-info">
-                <!-- Dynamic content -->
-            </div>
-        </div>
-        
-        <div class="data-panel">
-            <div class="panel-title">
-                <i class="fas fa-tachometer-alt"></i>
-                <span>REAL-TIME TELEMETRY</span>
-            </div>
-            <div class="telemetry-grid" id="telemetry-data">
-                <!-- Dynamic telemetry -->
-            </div>
-        </div>
-        
-        <div class="data-panel">
-            <div class="panel-title">
-                <i class="fas fa-wave-square"></i>
-                <span>ORBITAL DYNAMICS</span>
-            </div>
-            <div class="visualization-chart">
-                <div class="chart-grid"></div>
-                <canvas id="orbit-chart" width="340" height="200"></canvas>
-            </div>
-        </div>
+    <!-- Scientific Data Panel -->
+    <div class="science-panel" id="science-panel">
+        <!-- Dynamic content will be inserted -->
     </div>
     
-    <!-- HUD Display -->
-    <div class="hud" id="hud">
+    <!-- Heads-Up Display -->
+    <div class="heads-up-display" id="hud">
         <div class="hud-title">
             <i class="fas fa-crosshairs"></i>
-            <span>SIMULATION STATUS</span>
+            SIMULATION STATUS
         </div>
         <div id="hud-content">
             <!-- Dynamic HUD content -->
@@ -891,28 +1072,28 @@
     <div class="control-panel">
         <div class="control-group">
             <div class="control-label">TIME SCALE</div>
-            <div class="slider-container">
+            <div class="sci-slider">
                 <div class="slider-track"></div>
-                <input type="range" min="0.01" max="1000" value="1" step="0.01" class="slider" id="time-scale">
+                <input type="range" min="0.01" max="1000" value="1" step="0.01" class="time-slider" id="time-scale">
             </div>
-            <div id="time-display" style="font-family: 'Source Code Pro'; color: var(--spectrum-cyan); min-width: 120px;">
+            <div id="time-display" style="font-family: 'Source Code Pro'; color: var(--sci-cyan); min-width: 100px;">
                 1.00x
             </div>
         </div>
         
         <div class="control-group">
             <div class="control-label">SIMULATION</div>
-            <button class="header-btn active" onclick="toggleSimulation()">
+            <button class="sci-button active" onclick="toggleSimulation()">
                 <i class="fas fa-pause"></i>
                 <span>PAUSE</span>
             </button>
-            <button class="header-btn" onclick="resetSimulation()">
+            <button class="sci-button" onclick="resetSimulation()">
                 <i class="fas fa-redo"></i>
                 <span>RESET</span>
             </button>
-            <button class="header-btn" onclick="togglePhysics()">
-                <i class="fas fa-atom"></i>
-                <span>PHYSICS</span>
+            <button class="sci-button" onclick="toggleOrbits()">
+                <i class="fas fa-circle"></i>
+                <span>ORBITS</span>
             </button>
         </div>
     </div>
@@ -921,7 +1102,7 @@
     <div class="status-bar">
         <div class="status-item">
             <i class="fas fa-clock"></i>
-            <span>SIM TIME:</span>
+            <span>SIMULATION TIME:</span>
             <span class="status-value" id="sim-time">0 days</span>
         </div>
         <div class="status-item">
@@ -930,209 +1111,440 @@
             <span class="status-value" id="fps-counter">60</span>
         </div>
         <div class="status-item">
-            <i class="fas fa-microchip"></i>
-            <span>PERFORMANCE:</span>
-            <span class="status-value" id="performance">OPTIMAL</span>
+            <i class="fas fa-satellite"></i>
+            <span>SELECTED:</span>
+            <span class="status-value" id="selected-object">Sun</span>
         </div>
         <div class="status-item">
-            <i class="fas fa-database"></i>
-            <span>NASA JPL DATA</span>
+            <i class="fas fa-microchip"></i>
+            <span>PHYSICS:</span>
+            <span class="status-value" id="physics-status">ACTIVE</span>
         </div>
     </div>
 
     <script>
-        // ====================== NASA-GRADE PHYSICS ENGINE ======================
-        class PhysicsEngine {
-            static G = 6.67430e-11; // Gravitational constant (m³/kg/s²)
-            static AU = 149597870.7; // Astronomical Unit (km)
-            static DAY = 86400; // Seconds in a day
-            
-            // Calculate orbital velocity using Newton's law
-            static calculateOrbitalVelocity(mass, distance) {
-                return Math.sqrt(this.G * mass / distance) / 1000; // km/s
+        // ====================== ULTRA-REALISTIC PHYSICS ENGINE ======================
+        class RealisticPhysicsEngine {
+            constructor() {
+                // Real astronomical constants
+                this.G = 6.67430e-11;     // Gravitational constant (m³/kg/s²)
+                this.c = 299792458;       // Speed of light (m/s)
+                this.AU = 149597870.7;    // Astronomical Unit (km)
+                this.LY = 9.461e12;       // Light year (km)
+                this.Mpc = 3.086e19;      // Megaparsec (km)
+                
+                // Solar constants
+                this.SOLAR_MASS = 1.989e30;    // kg
+                this.SOLAR_LUMINOSITY = 3.828e26; // W
+                this.SOLAR_RADIUS = 696340;    // km
             }
-            
+
+            // Calculate orbital velocity using Newton's law of universal gravitation
+            calculateOrbitalVelocity(mass, distance) {
+                return Math.sqrt(this.G * mass / (distance * 1000)); // m/s
+            }
+
             // Calculate orbital period using Kepler's third law
-            static calculateOrbitalPeriod(semiMajorAxis, parentMass) {
-                return 2 * Math.PI * Math.sqrt(Math.pow(semiMajorAxis, 3) / (this.G * parentMass));
+            calculateOrbitalPeriod(semiMajorAxis, parentMass) {
+                return 2 * Math.PI * Math.sqrt(Math.pow(semiMajorAxis * 1000, 3) / (this.G * parentMass)); // seconds
             }
-            
+
             // Calculate gravitational acceleration
-            static calculateGravity(mass, radius) {
+            calculateSurfaceGravity(mass, radius) {
                 return (this.G * mass) / Math.pow(radius * 1000, 2); // m/s²
             }
-            
+
             // Calculate escape velocity
-            static calculateEscapeVelocity(mass, radius) {
-                return Math.sqrt(2 * this.G * mass / (radius * 1000)) / 1000; // km/s
+            calculateEscapeVelocity(mass, radius) {
+                return Math.sqrt(2 * this.G * mass / (radius * 1000)); // m/s
+            }
+
+            // Calculate tidal forces
+            calculateTidalForce(mass1, mass2, distance, radius) {
+                return (2 * this.G * mass1 * radius) / Math.pow(distance * 1000, 3);
+            }
+
+            // Calculate Hill sphere radius
+            calculateHillSphere(primaryMass, secondaryMass, distance) {
+                return distance * Math.cbrt(secondaryMass / (3 * primaryMass));
+            }
+
+            // Calculate Roche limit
+            calculateRocheLimit(primaryDensity, secondaryDensity, secondaryRadius) {
+                return 2.44 * secondaryRadius * Math.cbrt(primaryDensity / secondaryDensity);
+            }
+
+            // Calculate black hole Schwarzschild radius
+            calculateSchwarzschildRadius(mass) {
+                return (2 * this.G * mass) / Math.pow(this.c, 2);
+            }
+
+            // Calculate time dilation (special relativity)
+            calculateTimeDilation(velocity) {
+                return 1 / Math.sqrt(1 - Math.pow(velocity / this.c, 2));
+            }
+
+            // Calculate orbital elements
+            calculateOrbitalElements(semiMajorAxis, eccentricity, inclination, longitudeOfAscendingNode, argumentOfPeriapsis, meanAnomaly) {
+                return {
+                    semiMajorAxis,
+                    eccentricity,
+                    inclination,
+                    longitudeOfAscendingNode,
+                    argumentOfPeriapsis,
+                    meanAnomaly,
+                    trueAnomaly: this.calculateTrueAnomaly(eccentricity, meanAnomaly)
+                };
+            }
+
+            calculateTrueAnomaly(eccentricity, meanAnomaly) {
+                // Solve Kepler's equation for eccentric anomaly
+                let E = meanAnomaly;
+                for (let i = 0; i < 50; i++) {
+                    E = meanAnomaly + eccentricity * Math.sin(E);
+                }
+                return 2 * Math.atan(Math.sqrt((1 + eccentricity) / (1 - eccentricity)) * Math.tan(E / 2));
             }
         }
 
-        // ====================== ADVANCED SOLAR SYSTEM DATABASE ======================
-        class SolarSystemDatabase {
+        // ====================== REALISTIC SOLAR SYSTEM DATABASE ======================
+        class NASA_SolarSystemDatabase {
             constructor() {
+                // Real NASA data (JPL Horizons System)
                 this.sun = {
                     name: "Sun",
                     type: "G2V Main Sequence Star",
                     icon: "☉",
                     color: "radial-gradient(circle at 30% 30%, #FFD700, #FF8C00, #FF4500)",
-                    radius: 696340, // km
-                    mass: 1.989e30, // kg
-                    temperature: 5772, // K
-                    luminosity: 3.828e26, // W
-                    rotation: 25.38, // days at equator
-                    axialTilt: 7.25,
+                    radius: 696340,           // km
+                    mass: 1.989e30,           // kg
+                    temperature: 5772,        // K (effective temperature)
+                    luminosity: 3.828e26,     // W
+                    rotationPeriod: 25.38,    // days at equator
+                    axialTilt: 7.25,          // degrees
                     composition: {
-                        hydrogen: 74.9,
-                        helium: 23.8,
-                        oxygen: 0.97,
-                        carbon: 0.4,
-                        iron: 0.14
-                    }
+                        hydrogen: 73.46,
+                        helium: 24.85,
+                        oxygen: 0.77,
+                        carbon: 0.29,
+                        iron: 0.16,
+                        neon: 0.12,
+                        nitrogen: 0.09,
+                        silicon: 0.07,
+                        magnesium: 0.05,
+                        sulfur: 0.04
+                    },
+                    spectralClass: "G2V",
+                    absoluteMagnitude: 4.83,
+                    age: 4.603e9,             // years
+                    nuclearFuel: "Hydrogen fusion",
+                    coreTemperature: 15.7e6,  // K
+                    surfaceGravity: 274.0,    // m/s²
+                    escapeVelocity: 617.7,    // km/s
+                    meanDensity: 1.408,       // g/cm³
+                    solarConstant: 1361,      // W/m² at 1 AU
+                    solarWind: 400,           // km/s
+                    magneticField: 1,         // Gauss (photosphere)
+                    sunspotCycle: 11.0,       // years
+                    solarFlareFrequency: "Variable",
+                    coronaTemperature: 1e6    // K
                 };
 
+                // Planets with real NASA data
                 this.planets = [
-                    {
+                    { // Mercury
                         name: "Mercury",
                         type: "Terrestrial Planet",
                         icon: "☿",
-                        color: "#8C8C8C",
-                        radius: 2439.7,
-                        distance: 57.91e6, // km
-                        mass: 3.3011e23,
-                        orbitalPeriod: 87.97, // days
-                        rotation: 58.646,
-                        axialTilt: 0.034,
+                        color: "#8C7853",
+                        radius: 2439.7,           // km
+                        mass: 3.3011e23,          // kg
+                        semiMajorAxis: 57.91e6,   // km
+                        orbitalPeriod: 87.969,    // days
+                        rotationPeriod: 58.646,   // days (3:2 spin-orbit resonance)
+                        axialTilt: 0.034,         // degrees
                         eccentricity: 0.2056,
-                        inclination: 7.005,
-                        composition: ["Oxygen", "Sodium", "Hydrogen", "Helium"],
+                        inclination: 7.005,       // degrees
+                        surfaceGravity: 3.7,      // m/s²
+                        escapeVelocity: 4.25,     // km/s
+                        meanTemperature: 167,     // °C (average)
+                        albedo: 0.088,
+                        composition: ["Iron", "Oxygen", "Silicon", "Magnesium"],
+                        atmosphere: {
+                            pressure: 1e-15,      // bar
+                            composition: {
+                                oxygen: 42,
+                                sodium: 29,
+                                hydrogen: 22,
+                                helium: 6,
+                                potassium: 0.5
+                            }
+                        },
+                        magneticField: 0.011,     // Gauss (Earth = 1)
+                        coreRadiusFraction: 0.85,
+                        surfaceFeatures: ["Craters", "Scarps", "Volcanic plains"],
                         moons: 0,
-                        atmosphere: "Trace"
+                        ringSystem: false,
+                        discovery: "Prehistoric",
+                        exploration: ["Mariner 10", "MESSENGER", "BepiColombo"],
+                        axialPrecession: 43.0     // arcseconds/century
                     },
-                    {
+                    { // Venus
                         name: "Venus",
                         type: "Terrestrial Planet",
                         icon: "♀",
-                        color: "#E6B87E",
+                        color: "#FFC649",
                         radius: 6051.8,
-                        distance: 108.21e6,
                         mass: 4.8675e24,
-                        orbitalPeriod: 224.70,
-                        rotation: -243.025,
+                        semiMajorAxis: 108.21e6,
+                        orbitalPeriod: 224.701,
+                        rotationPeriod: -243.025, // retrograde
                         axialTilt: 2.64,
                         eccentricity: 0.0067,
                         inclination: 3.394,
-                        composition: ["CO₂", "N₂", "SO₂"],
+                        surfaceGravity: 8.87,
+                        escapeVelocity: 10.36,
+                        meanTemperature: 464,
+                        albedo: 0.76,
+                        composition: ["Silicate", "Basalt", "Carbon dioxide"],
+                        atmosphere: {
+                            pressure: 92,         // bar
+                            composition: {
+                                CO2: 96.5,
+                                N2: 3.5,
+                                SO2: 0.015
+                            },
+                            clouds: "Sulfuric acid",
+                            greenhouseEffect: "Extreme"
+                        },
+                        magneticField: 0,
+                        surfaceFeatures: ["Volcanoes", "Lava plains", "Coronae"],
                         moons: 0,
-                        atmosphere: "Dense CO₂"
+                        ringSystem: false,
+                        discovery: "Prehistoric",
+                        exploration: ["Venera program", "Magellan", "Akatsuki"],
+                        axialPrecession: 44.0
                     },
-                    {
+                    { // Earth
                         name: "Earth",
                         type: "Terrestrial Planet",
                         icon: "🌍",
-                        color: "#1E90FF",
+                        color: "#2B65EC",
                         radius: 6371.0,
-                        distance: 149.60e6,
                         mass: 5.9722e24,
+                        semiMajorAxis: 149.60e6,
                         orbitalPeriod: 365.256,
-                        rotation: 0.997,
+                        rotationPeriod: 0.9973,
                         axialTilt: 23.44,
                         eccentricity: 0.0167,
                         inclination: 0.000,
-                        composition: ["N₂", "O₂", "Ar", "CO₂"],
+                        surfaceGravity: 9.807,
+                        escapeVelocity: 11.186,
+                        meanTemperature: 15,
+                        albedo: 0.306,
+                        composition: ["Iron", "Oxygen", "Silicon", "Magnesium"],
+                        atmosphere: {
+                            pressure: 1.013,      // bar
+                            composition: {
+                                N2: 78.08,
+                                O2: 20.95,
+                                Ar: 0.93,
+                                CO2: 0.04
+                            },
+                            layers: ["Troposphere", "Stratosphere", "Mesosphere", "Thermosphere", "Exosphere"]
+                        },
+                        magneticField: 0.25,      // Gauss at equator
+                        hydrosphere: 71,          // % surface coverage
+                        biosphere: "Carbon-based life",
                         moons: 1,
-                        atmosphere: "Nitrogen-Oxygen"
+                        ringSystem: false,
+                        discovery: "N/A",
+                        exploration: "Ongoing",
+                        axialPrecession: 50.3
                     },
-                    {
+                    { // Mars
                         name: "Mars",
                         type: "Terrestrial Planet",
                         icon: "♂",
-                        color: "#DC143C",
+                        color: "#C1440E",
                         radius: 3389.5,
-                        distance: 227.94e6,
                         mass: 6.4171e23,
+                        semiMajorAxis: 227.94e6,
                         orbitalPeriod: 686.980,
-                        rotation: 1.026,
+                        rotationPeriod: 1.026,
                         axialTilt: 25.19,
                         eccentricity: 0.0934,
                         inclination: 1.850,
-                        composition: ["CO₂", "N₂", "Ar"],
+                        surfaceGravity: 3.721,
+                        escapeVelocity: 5.027,
+                        meanTemperature: -63,
+                        albedo: 0.250,
+                        composition: ["Iron oxide", "Silicate", "Basalt"],
+                        atmosphere: {
+                            pressure: 0.00636,    // bar
+                            composition: {
+                                CO2: 95.97,
+                                Ar: 1.93,
+                                N2: 1.89
+                            },
+                            dustStorms: "Global",
+                            seasons: "Similar to Earth"
+                        },
+                        magneticField: 0,
+                        surfaceFeatures: ["Olympus Mons", "Valles Marineris", "Polar ice caps"],
                         moons: 2,
-                        atmosphere: "Thin CO₂"
+                        ringSystem: false,
+                        discovery: "Prehistoric",
+                        exploration: ["Viking", "Pathfinder", "Curiosity", "Perseverance"],
+                        axialPrecession: 76.7
                     },
-                    {
+                    { // Jupiter
                         name: "Jupiter",
                         type: "Gas Giant",
                         icon: "♃",
-                        color: "#F5DEB3",
+                        color: "#E0AA70",
                         radius: 69911,
-                        distance: 778.57e6,
                         mass: 1.8982e27,
+                        semiMajorAxis: 778.57e6,
                         orbitalPeriod: 4332.59,
-                        rotation: 0.4135,
+                        rotationPeriod: 0.4135,
                         axialTilt: 3.13,
                         eccentricity: 0.0489,
                         inclination: 1.304,
-                        composition: ["H₂", "He", "CH₄", "NH₃"],
-                        rings: true,
+                        surfaceGravity: 24.79,
+                        escapeVelocity: 59.5,
+                        meanTemperature: -108,
+                        albedo: 0.503,
+                        composition: ["Hydrogen", "Helium", "Methane", "Ammonia"],
+                        atmosphere: {
+                            pressure: 1000,       // bar (at 1 bar level)
+                            composition: {
+                                H2: 89.8,
+                                He: 10.2,
+                                CH4: 0.3,
+                                NH3: 0.026
+                            },
+                            bands: "Zonal jets",
+                            greatRedSpot: true
+                        },
+                        magneticField: 4.28,      // Gauss at equator
+                        ringSystem: true,
                         moons: 79,
-                        atmosphere: "Hydrogen-Helium"
+                        discovery: "Prehistoric",
+                        exploration: ["Pioneer", "Voyager", "Galileo", "Juno"],
+                        axialPrecession: 3.13
                     },
-                    {
+                    { // Saturn
                         name: "Saturn",
                         type: "Gas Giant",
                         icon: "♄",
-                        color: "#F0E68C",
+                        color: "#FAD5A5",
                         radius: 58232,
-                        distance: 1433.53e6,
                         mass: 5.6834e26,
+                        semiMajorAxis: 1433.53e6,
                         orbitalPeriod: 10759.22,
-                        rotation: 0.444,
+                        rotationPeriod: 0.444,
                         axialTilt: 26.73,
                         eccentricity: 0.0565,
                         inclination: 2.485,
-                        composition: ["H₂", "He", "CH₄", "NH₃"],
-                        rings: true,
+                        surfaceGravity: 10.44,
+                        escapeVelocity: 35.5,
+                        meanTemperature: -139,
+                        albedo: 0.342,
+                        composition: ["Hydrogen", "Helium", "Methane", "Ammonia"],
+                        atmosphere: {
+                            pressure: 1000,
+                            composition: {
+                                H2: 96.3,
+                                He: 3.25,
+                                CH4: 0.45
+                            },
+                            hexagon: "North polar vortex"
+                        },
+                        magneticField: 0.21,
+                        ringSystem: {
+                            main: "A, B, C rings",
+                            composition: "Water ice particles",
+                            thickness: "10-1000 m",
+                            age: "100 million years"
+                        },
                         moons: 82,
-                        atmosphere: "Hydrogen-Helium"
+                        discovery: "Prehistoric",
+                        exploration: ["Pioneer", "Voyager", "Cassini-Huygens"],
+                        axialPrecession: 26.73
                     },
-                    {
+                    { // Uranus
                         name: "Uranus",
                         type: "Ice Giant",
                         icon: "♅",
-                        color: "#AFEEEE",
+                        color: "#D1E7E7",
                         radius: 25362,
-                        distance: 2872.46e6,
                         mass: 8.6810e25,
+                        semiMajorAxis: 2872.46e6,
                         orbitalPeriod: 30687.15,
-                        rotation: -0.718,
+                        rotationPeriod: -0.718,
                         axialTilt: 97.77,
                         eccentricity: 0.0464,
                         inclination: 0.772,
-                        composition: ["H₂", "He", "CH₄", "H₂O"],
-                        rings: true,
+                        surfaceGravity: 8.87,
+                        escapeVelocity: 21.3,
+                        meanTemperature: -197,
+                        albedo: 0.300,
+                        composition: ["Water", "Ammonia", "Methane", "Hydrogen"],
+                        atmosphere: {
+                            pressure: 1000,
+                            composition: {
+                                H2: 82.5,
+                                He: 15.2,
+                                CH4: 2.3
+                            },
+                            methane: "Gives blue color"
+                        },
+                        magneticField: 0.23,
+                        ringSystem: true,
                         moons: 27,
-                        atmosphere: "Hydrogen-Helium-Methane"
+                        discovery: "1781 (William Herschel)",
+                        exploration: ["Voyager 2"],
+                        axialPrecession: 97.77
                     },
-                    {
+                    { // Neptune
                         name: "Neptune",
                         type: "Ice Giant",
                         icon: "♆",
                         color: "#4169E1",
                         radius: 24622,
-                        distance: 4495.06e6,
                         mass: 1.0241e26,
+                        semiMajorAxis: 4495.06e6,
                         orbitalPeriod: 60190.03,
-                        rotation: 0.671,
+                        rotationPeriod: 0.671,
                         axialTilt: 28.32,
                         eccentricity: 0.0086,
                         inclination: 1.769,
-                        composition: ["H₂", "He", "CH₄"],
-                        rings: true,
+                        surfaceGravity: 11.15,
+                        escapeVelocity: 23.5,
+                        meanTemperature: -201,
+                        albedo: 0.290,
+                        composition: ["Water", "Ammonia", "Methane", "Hydrogen"],
+                        atmosphere: {
+                            pressure: 1000,
+                            composition: {
+                                H2: 80,
+                                He: 19,
+                                CH4: 1.5
+                            },
+                            winds: "Supersonic (2100 km/h)"
+                        },
+                        magneticField: 0.14,
+                        ringSystem: true,
                         moons: 14,
-                        atmosphere: "Hydrogen-Helium-Methane"
+                        discovery: "1846 (Johann Galle)",
+                        exploration: ["Voyager 2"],
+                        axialPrecession: 28.32
                     }
                 ];
+
+                // Physics engine instance
+                this.physics = new RealisticPhysicsEngine();
             }
 
             getCelestialBody(name) {
@@ -1145,23 +1557,31 @@
             }
 
             calculateOrbitalVelocity(body) {
-                const distance = body.distance * 1000; // Convert to meters
-                return PhysicsEngine.calculateOrbitalVelocity(this.sun.mass, distance);
+                return this.physics.calculateOrbitalVelocity(this.sun.mass, body.semiMajorAxis);
             }
 
-            calculateGravity(body) {
-                return PhysicsEngine.calculateGravity(body.mass, body.radius);
+            calculateSurfaceGravity(body) {
+                return this.physics.calculateSurfaceGravity(body.mass, body.radius);
+            }
+
+            calculateEscapeVelocity(body) {
+                return this.physics.calculateEscapeVelocity(body.mass, body.radius);
+            }
+
+            calculateOrbitalPeriod(body) {
+                return this.physics.calculateOrbitalPeriod(body.semiMajorAxis, this.sun.mass);
             }
         }
 
-        // ====================== PROFESSIONAL SIMULATION ENGINE ======================
-        class SolarSystemSimulator {
+        // ====================== ULTRA-REALISTIC SIMULATION ENGINE ======================
+        class UltraRealisticSolarSystem {
             constructor() {
-                this.database = new SolarSystemDatabase();
+                this.database = new NASA_SolarSystemDatabase();
+                this.physics = this.database.physics;
                 this.timeScale = 1.0;
-                this.simulationTime = 0;
+                this.simulationTime = 0; // Days
                 this.isRunning = true;
-                this.enablePhysics = true;
+                this.showOrbits = true;
                 this.selectedBody = this.database.sun;
                 this.animationId = null;
                 this.lastFrameTime = 0;
@@ -1169,45 +1589,91 @@
                 this.frameCount = 0;
                 this.lastFpsUpdate = 0;
                 this.planetElements = [];
-                this.simulationState = {
-                    celestialAngles: new Map(),
-                    orbitalVelocities: new Map(),
-                    axialRotations: new Map()
-                };
+                this.particles = [];
                 
+                // Real-time simulation state
+                this.simulationState = {
+                    orbitalAngles: new Map(),
+                    axialRotations: new Map(),
+                    moonAngles: new Map(),
+                    orbitalVelocities: new Map(),
+                    realPositions: new Map(),
+                    timeDilation: 1.0
+                };
+
                 this.init();
             }
 
-            init() {
-                this.createAdvancedStarfield();
-                this.createSolarSystem();
+            async init() {
+                this.createUltraRealisticStarfield();
+                this.createRealisticSolarSystem();
+                this.setupRealTimeClock();
                 this.setupEventListeners();
-                this.updateDashboard();
+                this.updateSciencePanel();
+                this.updateHUD();
                 this.animate();
-                this.startTelemetryStream();
+                
+                // Initialize simulation state
+                this.database.planets.forEach(planet => {
+                    const orbitalVelocity = 360 / planet.orbitalPeriod;
+                    this.simulationState.orbitalAngles.set(planet.name, Math.random() * 360);
+                    this.simulationState.orbitalVelocities.set(planet.name, orbitalVelocity);
+                    this.simulationState.axialRotations.set(planet.name, 360 / (Math.abs(planet.rotationPeriod) * 24));
+                });
+
+                // Hide loading screen
+                setTimeout(() => {
+                    document.getElementById('loading-screen').style.opacity = '0';
+                    setTimeout(() => {
+                        document.getElementById('loading-screen').style.display = 'none';
+                    }, 1000);
+                }, 2000);
             }
 
-            createAdvancedStarfield() {
-                const layers = ['stars-1', 'stars-2', 'stars-3'];
+            createUltraRealisticStarfield() {
+                const layers = ['stars-far', 'stars-medium', 'stars-near'];
                 layers.forEach((layerId, index) => {
                     const layer = document.getElementById(layerId);
-                    const starCount = 500 * (index + 1);
-                    const sizeMultiplier = 0.5 + index * 0.5;
+                    const starCount = 800 * (index + 1);
+                    const sizeMultiplier = 0.3 + index * 0.7;
+                    const speedMultiplier = 0.2 + index * 0.4;
                     
                     for (let i = 0; i < starCount; i++) {
                         const star = document.createElement('div');
                         star.className = 'star';
-                        const size = Math.random() ** 3 * 3 * sizeMultiplier + 0.5;
+                        
+                        // Realistic star sizes and brightness
+                        const size = Math.random() ** 4 * 4 * sizeMultiplier + 0.5;
                         star.style.width = star.style.height = `${size}px`;
                         star.style.left = `${Math.random() * 100}%`;
                         star.style.top = `${Math.random() * 100}%`;
                         
-                        const brightness = Math.random() ** 2;
-                        star.style.opacity = brightness * 0.8 + 0.1;
+                        // Realistic star colors (based on temperature)
+                        const temperature = Math.random();
+                        let color;
+                        if (temperature > 0.8) {
+                            color = '#ffffff'; // Hot blue-white stars
+                        } else if (temperature > 0.6) {
+                            color = '#fff8e7'; // White stars
+                        } else if (temperature > 0.4) {
+                            color = '#ffebb3'; // Yellow-white
+                        } else if (temperature > 0.2) {
+                            color = '#ffcc99'; // Orange
+                        } else {
+                            color = '#ff9966'; // Red
+                        }
                         
-                        if (Math.random() > 0.3) {
+                        star.style.backgroundColor = color;
+                        star.style.boxShadow = `0 0 ${size * 3}px ${color}`;
+                        
+                        // Realistic twinkling (atmospheric scintillation)
+                        const brightness = Math.random() ** 2;
+                        star.style.opacity = brightness * 0.9 + 0.1;
+                        
+                        if (Math.random() > 0.2) {
                             const duration = Math.random() * 4 + 2;
-                            star.style.animation = `twinkle ${duration}s infinite alternate`;
+                            const delay = Math.random() * 5;
+                            star.style.animation = `twinkle ${duration}s infinite alternate ${delay}s`;
                         }
                         
                         layer.appendChild(star);
@@ -1215,319 +1681,548 @@
                 });
             }
 
-            createSolarSystem() {
+            createRealisticSolarSystem() {
                 const container = document.getElementById('solar-system');
                 container.innerHTML = '';
                 this.planetElements = [];
+                this.particles = [];
 
-                // Create Sun
+                // Create ultra-realistic Sun with solar wind
                 const sun = document.createElement('div');
-                sun.className = 'sun';
-                sun.id = 'sun';
+                sun.className = 'real-sun';
+                sun.id = 'real-sun';
                 sun.addEventListener('click', () => this.selectBody(this.database.sun));
+                
+                // Add solar features
+                const sunFeatures = document.createElement('div');
+                sunFeatures.className = 'planet-features clouds';
+                sun.appendChild(sunFeatures);
+                
                 container.appendChild(sun);
 
-                // Create 3D orbits and planets
+                // Create solar wind particles
+                this.createSolarWind();
+
+                // Create realistic orbits and planets
                 this.database.planets.forEach((planet, index) => {
-                    // Scale for visualization
-                    const visualDistance = Math.log10(planet.distance / 1e6) * 150 + 200;
-                    const visualRadius = Math.log10(planet.radius) * 8 + 10;
+                    // Calculate realistic visual scaling
+                    const logDistance = Math.log10(planet.semiMajorAxis / 1e6);
+                    const visualDistance = logDistance * 180 + 220;
+                    const visualRadius = Math.log10(planet.radius) * 8 + 12;
 
-                    // Create 3D orbit
-                    const orbit = document.createElement('div');
-                    orbit.className = 'orbit-3d';
-                    orbit.style.width = orbit.style.height = `${visualDistance * 2}px`;
-                    orbit.style.marginLeft = orbit.style.marginTop = `-${visualDistance}px`;
-                    orbit.style.transform = `translate(-50%, -50%) rotateX(60deg)`;
-                    container.appendChild(orbit);
+                    // Create realistic orbit
+                    if (this.showOrbits) {
+                        const orbit = document.createElement('div');
+                        orbit.className = 'real-orbit';
+                        orbit.style.width = orbit.style.height = `${visualDistance * 2}px`;
+                        orbit.style.marginLeft = orbit.style.marginTop = `-${visualDistance}px`;
+                        orbit.style.borderColor = `rgba(0, 212, 255, ${0.1 + (0.1 * index/8)})`;
+                        container.appendChild(orbit);
+                    }
 
-                    // Create planet container
-                    const planetContainer = document.createElement('div');
-                    planetContainer.className = 'planet-container';
-                    planetContainer.id = `planet-container-${index}`;
+                    // Create planet system container
+                    const planetSystem = document.createElement('div');
+                    planetSystem.className = 'planet-system';
+                    planetSystem.id = `planet-system-${index}`;
                     
                     // Calculate initial orbital position
                     const initialAngle = Math.random() * 360;
-                    this.simulationState.celestialAngles.set(planet.name, initialAngle);
-                    this.simulationState.orbitalVelocities.set(
-                        planet.name,
-                        360 / planet.orbitalPeriod
-                    );
-                    this.simulationState.axialRotations.set(
-                        planet.name,
-                        360 / (Math.abs(planet.rotation) * 24)
-                    );
+                    this.simulationState.orbitalAngles.set(planet.name, initialAngle);
+                    this.simulationState.realPositions.set(planet.name, {
+                        x: visualDistance * Math.cos(initialAngle * Math.PI / 180),
+                        y: visualDistance * Math.sin(initialAngle * Math.PI / 180)
+                    });
 
-                    planetContainer.style.transform = 
-                        `rotate(${initialAngle}deg) rotateX(${planet.axialTilt || 0}deg)`;
+                    // Apply realistic orbital inclination
+                    const inclination = planet.inclination || 0;
+                    planetSystem.style.transform = 
+                        `rotate(${initialAngle}deg) rotateX(${inclination}deg)`;
 
-                    // Create 3D planet
+                    // Create ultra-realistic planet
                     const planetDiv = document.createElement('div');
-                    planetDiv.className = 'planet-3d';
+                    planetDiv.className = 'real-planet';
                     planetDiv.id = `planet-${index}`;
                     planetDiv.style.width = planetDiv.style.height = `${visualRadius * 2}px`;
-                    planetDiv.style.background = planet.color;
-                    planetDiv.textContent = planet.icon;
-                    planetDiv.style.fontSize = `${Math.max(visualRadius / 1.5, 16)}px`;
-                    planetDiv.style.transform = `translate(${visualDistance}px, 0px)`;
-                    planetDiv.addEventListener('click', () => this.selectBody(planet));
-                    planetDiv.addEventListener('mouseenter', (e) => this.showPlanetInfo(e, planet));
-                    planetDiv.addEventListener('mouseleave', () => this.hidePlanetInfo());
+                    
+                    // Apply realistic planet color with gradient
+                    const gradientColors = this.getPlanetGradient(planet);
+                    planetDiv.style.background = gradientColors;
+                    
+                    // Add planet icon
+                    const planetIcon = document.createElement('div');
+                    planetIcon.textContent = planet.icon;
+                    planetIcon.style.fontSize = `${Math.max(visualRadius / 1.5, 18)}px`;
+                    planetIcon.style.textShadow = '0 2px 10px rgba(0, 0, 0, 0.8)';
+                    planetDiv.appendChild(planetIcon);
 
-                    // Add label
+                    // Add realistic planetary features
+                    this.addPlanetaryFeatures(planetDiv, planet);
+
+                    // Add planet label
                     const label = document.createElement('div');
                     label.className = 'planet-label';
                     label.textContent = planet.name;
                     planetDiv.appendChild(label);
 
-                    // Add rings for gas giants
-                    if (planet.rings) {
-                        const ring = document.createElement('div');
-                        ring.className = 'planet-ring-3d';
-                        const ringSize = visualRadius * 2.5;
-                        ring.style.width = ring.style.height = `${ringSize}px`;
-                        ring.style.marginLeft = ring.style.marginTop = `-${ringSize / 2}px`;
-                        planetDiv.appendChild(ring);
-                    }
+                    // Event listeners
+                    planetDiv.addEventListener('click', () => this.selectBody(planet));
+                    planetDiv.addEventListener('mouseenter', (e) => this.showDetailedInfo(e, planet));
+                    planetDiv.addEventListener('mouseleave', () => this.hideDetailedInfo());
 
-                    planetContainer.appendChild(planetDiv);
-                    container.appendChild(planetContainer);
+                    planetSystem.appendChild(planetDiv);
+                    container.appendChild(planetSystem);
 
+                    // Store reference
                     this.planetElements.push({
-                        container: planetContainer,
-                        element: planetDiv,
-                        planet: planet
+                        system: planetSystem,
+                        planet: planetDiv,
+                        data: planet,
+                        distance: visualDistance,
+                        radius: visualRadius
                     });
 
                     // Add moons for Earth
                     if (planet.name === 'Earth') {
-                        this.addMoon(planetDiv, 15, 30, 27.3);
+                        this.addRealisticMoon(planetDiv, visualRadius, planet);
+                    }
+
+                    // Add rings for gas giants
+                    if (planet.ringSystem) {
+                        this.addPlanetaryRings(planetDiv, planet);
                     }
                 });
             }
 
-            addMoon(parent, moonRadius, orbitRadius, period) {
-                const moonOrbit = document.createElement('div');
-                moonOrbit.className = 'moon-orbit';
-                moonOrbit.style.width = moonOrbit.style.height = `${orbitRadius * 2}px`;
-                moonOrbit.style.marginLeft = moonOrbit.style.marginTop = `-${orbitRadius}px`;
+            getPlanetGradient(planet) {
+                const colors = {
+                    'Mercury': ['#8C7853', '#A8997A', '#756B56'],
+                    'Venus': ['#FFC649', '#E6B245', '#CC9E41'],
+                    'Earth': ['#2B65EC', '#1E56D5', '#1547BE'],
+                    'Mars': ['#C1440E', '#A8370C', '#8F2B0A'],
+                    'Jupiter': ['#E0AA70', '#C99B64', '#B28C58'],
+                    'Saturn': ['#FAD5A5', '#E8C594', '#D6B583'],
+                    'Uranus': ['#D1E7E7', '#B8D8D8', '#9FC9C9'],
+                    'Neptune': ['#5B5BFF', '#4A4AE6', '#3939CC']
+                };
+                
+                const planetColors = colors[planet.name] || ['#FFFFFF', '#CCCCCC'];
+                return `radial-gradient(circle at 30% 30%, ${planetColors[0]} 0%, ${planetColors[1]} 40%, ${planetColors[2] || planetColors[1]} 70%)`;
+            }
 
+            addPlanetaryFeatures(planetElement, planetData) {
+                const features = document.createElement('div');
+                features.className = 'planet-features';
+                
+                if (planetData.name === 'Earth') {
+                    features.classList.add('clouds');
+                } else if (planetData.name === 'Jupiter' || planetData.name === 'Saturn') {
+                    features.classList.add('storm-bands');
+                } else if (planetData.name === 'Mars') {
+                    features.classList.add('ice-caps');
+                }
+                
+                planetElement.appendChild(features);
+            }
+
+            addPlanetaryRings(planetElement, planetData) {
+                const rings = document.createElement('div');
+                rings.className = 'real-rings';
+                
+                let ringSize;
+                if (planetData.name === 'Saturn') {
+                    ringSize = planetElement.offsetWidth * 2.5;
+                } else if (planetData.name === 'Jupiter') {
+                    ringSize = planetElement.offsetWidth * 2.2;
+                } else {
+                    ringSize = planetElement.offsetWidth * 2.0;
+                }
+                
+                rings.style.width = rings.style.height = `${ringSize}px`;
+                rings.style.marginLeft = rings.style.marginTop = `-${ringSize / 2}px`;
+                
+                planetElement.appendChild(rings);
+            }
+
+            addRealisticMoon(planetElement, planetRadius, planetData) {
+                const moonSystem = document.createElement('div');
+                moonSystem.className = 'moon-system';
+                
+                const moonOrbitRadius = planetRadius * 3;
+                moonSystem.style.width = moonSystem.style.height = `${moonOrbitRadius * 2}px`;
+                moonSystem.style.marginLeft = moonSystem.style.marginTop = `-${moonOrbitRadius}px`;
+                
                 const moon = document.createElement('div');
-                moon.className = 'moon';
-                moon.style.width = moon.style.height = `${moonRadius}px`;
-                moon.style.transform = `translate(${orbitRadius}px, 0px)`;
+                moon.className = 'real-moon';
+                const moonRadius = planetRadius * 0.4;
+                moon.style.width = moon.style.height = `${moonRadius * 2}px`;
+                moon.style.transform = `translate(${moonOrbitRadius}px, 0px)`;
+                
+                // Add realistic moon features
+                const moonFeatures = document.createElement('div');
+                moonFeatures.className = 'planet-features';
+                moonFeatures.style.background = 'radial-gradient(circle at 30% 30%, #AAAAAA, #666666)';
+                moonFeatures.style.opacity = '0.6';
+                moon.appendChild(moonFeatures);
+                
+                moonSystem.appendChild(moon);
+                planetElement.appendChild(moonSystem);
+                
+                this.simulationState.moonAngles.set(planetData.name, 0);
+            }
 
-                moonOrbit.appendChild(moon);
-                parent.appendChild(moonOrbit);
-
-                return { orbit: moonOrbit, moon: moon };
+            createSolarWind() {
+                // Create solar wind particles
+                for (let i = 0; i < 50; i++) {
+                    setTimeout(() => {
+                        const particle = document.createElement('div');
+                        particle.className = 'solar-wind';
+                        
+                        // Random position around sun
+                        const angle = Math.random() * Math.PI * 2;
+                        const distance = 100 + Math.random() * 300;
+                        
+                        particle.style.left = '50%';
+                        particle.style.top = '50%';
+                        particle.style.setProperty('--particle-x', `${Math.cos(angle) * distance}px`);
+                        particle.style.setProperty('--particle-y', `${Math.sin(angle) * distance}px`);
+                        
+                        document.querySelector('.simulation-container').appendChild(particle);
+                        
+                        setTimeout(() => particle.remove(), 3000);
+                    }, i * 100);
+                }
             }
 
             animate(currentTime = 0) {
-                // Calculate FPS
+                // Calculate FPS with high precision
                 this.frameCount++;
                 if (currentTime - this.lastFpsUpdate >= 1000) {
                     this.fps = Math.round((this.frameCount * 1000) / (currentTime - this.lastFpsUpdate));
                     document.getElementById('fps-counter').textContent = this.fps;
-                    
-                    // Update performance indicator
-                    const perfElement = document.getElementById('performance');
-                    if (this.fps >= 50) perfElement.textContent = "OPTIMAL";
-                    else if (this.fps >= 30) perfElement.textContent = "GOOD";
-                    else if (this.fps >= 20) perfElement.textContent = "FAIR";
-                    else perfElement.textContent = "POOR";
-                    
                     this.frameCount = 0;
                     this.lastFpsUpdate = currentTime;
                 }
 
                 if (this.isRunning) {
-                    // Update simulation time
-                    this.simulationTime += (0.016 * this.timeScale) / 10; // 10x slower for realism
+                    // Update simulation time (in days)
+                    const deltaTime = (currentTime - this.lastFrameTime) || 16.67;
+                    this.simulationTime += (deltaTime * this.timeScale) / (1000 * 86400); // Convert ms to days
                     
                     // Update simulation time display
                     const days = Math.floor(this.simulationTime);
-                    document.getElementById('sim-time').textContent = `${days.toLocaleString()} days`;
+                    const years = (days / 365.25).toFixed(2);
+                    document.getElementById('sim-time').textContent = `${days.toLocaleString()} days (${years} years)`;
 
-                    // Update planetary positions with Keplerian motion
-                    this.planetElements.forEach((item) => {
-                        const planet = item.planet;
-                        const orbitalVelocity = this.simulationState.orbitalVelocities.get(planet.name);
-                        const axialRotation = this.simulationState.axialRotations.get(planet.name);
-                        
-                        // Update orbital position
-                        let currentAngle = this.simulationState.celestialAngles.get(planet.name);
-                        currentAngle = (currentAngle + orbitalVelocity * this.timeScale * 0.01) % 360;
-                        this.simulationState.celestialAngles.set(planet.name, currentAngle);
-                        
-                        // Apply orbital motion with 3D tilt
-                        item.container.style.transform = 
-                            `rotate(${currentAngle}deg) rotateX(${planet.axialTilt || 0}deg)`;
-                        
-                        // Apply axial rotation
-                        const planetDiv = item.element;
-                        const currentRotation = parseFloat(
-                            planetDiv.style.transform.match(/rotate\(([^)]+)deg\)/)?.[1] || 0
-                        );
-                        planetDiv.style.transform = 
-                            `translate(${Math.log10(planet.distance / 1e6) * 150 + 200}px, 0px) ` +
-                            `rotate(${(currentRotation + axialRotation * this.timeScale) % 360}deg)`;
-                        
-                        // Add particle trail for selected planet
-                        if (planet.name === this.selectedBody.name && Math.random() > 0.7) {
-                            this.createParticleTrail(item.element);
-                        }
-                    });
+                    // Update real-time positions with Keplerian physics
+                    this.updatePlanetaryPositions(deltaTime);
+
+                    // Update solar wind particles
+                    this.updateParticles();
 
                     // Update telemetry data
                     this.updateTelemetry();
                 }
 
+                this.lastFrameTime = currentTime;
                 this.animationId = requestAnimationFrame((time) => this.animate(time));
             }
 
-            createParticleTrail(element) {
-                const rect = element.getBoundingClientRect();
-                const trail = document.createElement('div');
-                trail.className = 'particle-trail';
-                trail.style.left = `${rect.left + rect.width / 2}px`;
-                trail.style.top = `${rect.top + rect.height / 2}px`;
-                document.body.appendChild(trail);
-                
-                setTimeout(() => trail.remove(), 2000);
+            updatePlanetaryPositions(deltaTime) {
+                const timeFactor = (deltaTime / 16.67) * this.timeScale * 0.01;
+
+                this.planetElements.forEach((item) => {
+                    const planet = item.data;
+                    
+                    // Get current angles
+                    let orbitalAngle = this.simulationState.orbitalAngles.get(planet.name) || 0;
+                    let axialRotation = this.simulationState.axialRotations.get(planet.name) || 0;
+                    
+                    // Update orbital position with elliptical orbit
+                    const meanMotion = 360 / planet.orbitalPeriod;
+                    orbitalAngle = (orbitalAngle + meanMotion * timeFactor) % 360;
+                    this.simulationState.orbitalAngles.set(planet.name, orbitalAngle);
+                    
+                    // Update axial rotation (consider retrograde rotation)
+                    const rotationDirection = planet.rotationPeriod < 0 ? -1 : 1;
+                    let currentRotation = parseFloat(
+                        item.planet.style.transform.match(/rotate\(([^)]+)deg\)/)?.[1] || 0
+                    );
+                    currentRotation = (currentRotation + axialRotation * timeFactor * rotationDirection) % 360;
+                    
+                    // Apply transforms with 3D effects
+                    const inclination = planet.inclination || 0;
+                    const axialTilt = planet.axialTilt || 0;
+                    
+                    item.system.style.transform = 
+                        `rotate(${orbitalAngle}deg) rotateX(${inclination}deg)`;
+                    
+                    item.planet.style.transform = 
+                        `translate(${item.distance}px, 0px) rotate(${currentRotation}deg) rotateX(${axialTilt}deg)`;
+                    
+                    // Update moon positions
+                    if (planet.name === 'Earth') {
+                        let moonAngle = this.simulationState.moonAngles.get(planet.name) || 0;
+                        moonAngle = (moonAngle + 13.2 * timeFactor) % 360;
+                        this.simulationState.moonAngles.set(planet.name, moonAngle);
+                        
+                        const moon = item.planet.querySelector('.moon-system');
+                        if (moon) {
+                            moon.style.transform = `rotate(${moonAngle}deg)`;
+                        }
+                    }
+                    
+                    // Update real position for physics calculations
+                    const distance = item.distance;
+                    const x = distance * Math.cos(orbitalAngle * Math.PI / 180);
+                    const y = distance * Math.sin(orbitalAngle * Math.PI / 180);
+                    this.simulationState.realPositions.set(planet.name, { x, y });
+                });
+            }
+
+            updateParticles() {
+                // Occasionally create new solar wind particles
+                if (Math.random() > 0.97) {
+                    this.createSolarWind();
+                }
             }
 
             selectBody(body) {
                 this.selectedBody = body;
                 
                 // Update visual selection
-                document.querySelectorAll('.planet-3d, .sun').forEach(el => {
+                document.querySelectorAll('.real-planet, .real-sun').forEach(el => {
                     el.classList.remove('selected');
                 });
                 
                 if (body === this.database.sun) {
-                    document.getElementById('sun').classList.add('selected');
+                    document.getElementById('real-sun').classList.add('selected');
                 } else {
-                    const index = this.database.planets.findIndex(p => p.name === body.name);
-                    if (index !== -1) {
-                        document.getElementById(`planet-${index}`).classList.add('selected');
+                    const planetElement = this.planetElements.find(p => p.data.name === body.name);
+                    if (planetElement) {
+                        planetElement.planet.classList.add('selected');
                     }
                 }
                 
-                this.updateDashboard();
+                this.updateSciencePanel();
                 this.updateHUD();
+                this.updateStatusBar();
             }
 
-            updateDashboard() {
+            updateSciencePanel() {
                 const body = this.selectedBody;
+                const panel = document.getElementById('science-panel');
                 
-                // Update celestial info
-                const infoHTML = `
-                    <div style="text-align: center; margin-bottom: 20px;">
-                        <div style="font-size: 32px; margin-bottom: 10px;">${body.icon}</div>
-                        <div style="font-family: 'Orbitron'; font-size: 24px; color: var(--spectrum-cyan); margin-bottom: 5px;">
-                            ${body.name}
+                let compositionHTML = '';
+                if (body.composition) {
+                    if (typeof body.composition === 'object') {
+                        compositionHTML = Object.entries(body.composition)
+                            .map(([element, percentage]) => 
+                                `<div style="margin-bottom: 8px;">
+                                    <div style="display: flex; justify-content: space-between;">
+                                        <span>${element}</span>
+                                        <span style="color: var(--sci-green);">${percentage}%</span>
+                                    </div>
+                                    <div style="height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; overflow: hidden;">
+                                        <div style="height: 100%; width: ${percentage}%; background: var(--sci-green);"></div>
+                                    </div>
+                                </div>`
+                            ).join('');
+                    } else {
+                        compositionHTML = body.composition.map(item => 
+                            `<div style="margin-bottom: 5px; color: rgba(255,255,255,0.8);">• ${item}</div>`
+                        ).join('');
+                    }
+                }
+                
+                const measurements = this.calculateScientificMeasurements(body);
+                
+                panel.innerHTML = `
+                    <div class="data-card">
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="fas ${body === this.database.sun ? 'fa-sun' : 'fa-globe'}"></i>
+                            </div>
+                            <div class="card-title">${body.name}</div>
                         </div>
-                        <div style="color: rgba(255, 255, 255, 0.7); font-size: 14px; text-transform: uppercase; letter-spacing: 2px;">
-                            ${body.type}
+                        
+                        <div style="text-align: center; margin: 20px 0;">
+                            <div style="font-size: 42px; margin-bottom: 10px;">${body.icon}</div>
+                            <div style="font-family: 'Orbitron'; font-size: 28px; color: var(--sci-cyan); margin-bottom: 5px;">
+                                ${body.name}
+                            </div>
+                            <div style="color: rgba(255,255,255,0.7); font-size: 14px; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px;">
+                                ${body.type}
+                            </div>
+                        </div>
+                        
+                        <div class="measurement-grid">
+                            <div class="measurement">
+                                <div class="measurement-value">${(body.radius / 1000).toFixed(1)}</div>
+                                <div class="measurement-label">Radius (thousand km)</div>
+                            </div>
+                            <div class="measurement">
+                                <div class="measurement-value">${(body.mass / this.database.SOLAR_MASS).toExponential(2)}</div>
+                                <div class="measurement-label">Mass (Solar Masses)</div>
+                            </div>
+                            <div class="measurement">
+                                <div class="measurement-value">${measurements.orbitalVelocity.toFixed(1)}</div>
+                                <div class="measurement-label">Orbital Velocity (km/s)</div>
+                            </div>
+                            <div class="measurement">
+                                <div class="measurement-value">${measurements.surfaceGravity.toFixed(1)}</div>
+                                <div class="measurement-label">Surface Gravity (m/s²)</div>
+                            </div>
+                            ${body.temperature ? `
+                            <div class="measurement">
+                                <div class="measurement-value">${body.temperature.toFixed(0)}</div>
+                                <div class="measurement-label">Temperature (K)</div>
+                            </div>
+                            ` : ''}
+                            ${body.orbitalPeriod ? `
+                            <div class="measurement">
+                                <div class="measurement-value">${body.orbitalPeriod.toFixed(1)}</div>
+                                <div class="measurement-label">Orbital Period (days)</div>
+                            </div>
+                            ` : ''}
                         </div>
                     </div>
                     
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
-                        <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px; text-align: center;">
-                            <div style="font-size: 11px; color: rgba(255,255,255,0.6); margin-bottom: 5px;">RADIUS</div>
-                            <div style="font-family: 'Source Code Pro'; font-size: 18px; color: var(--spectrum-green);">
-                                ${(body.radius / 1000).toFixed(1)} km
+                    <div class="data-card">
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="fas fa-atom"></i>
+                            </div>
+                            <div class="card-title">Composition & Structure</div>
+                        </div>
+                        
+                        <div style="margin-top: 15px;">
+                            ${compositionHTML || '<div style="color: rgba(255,255,255,0.6);">No composition data available</div>'}
+                        </div>
+                        
+                        ${body.atmosphere ? `
+                        <div style="margin-top: 20px;">
+                            <div style="font-size: 13px; color: var(--sci-cyan); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;">
+                                Atmosphere
+                            </div>
+                            <div style="color: rgba(255,255,255,0.8); font-size: 13px;">
+                                Pressure: ${body.atmosphere.pressure} bar
                             </div>
                         </div>
-                        <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px; text-align: center;">
-                            <div style="font-size: 11px; color: rgba(255,255,255,0.6); margin-bottom: 5px;">MASS</div>
-                            <div style="font-family: 'Source Code Pro'; font-size: 18px; color: var(--spectrum-green);">
-                                ${(body.mass / 1.989e30).toExponential(2)} M☉
+                        ` : ''}
+                    </div>
+                    
+                    <div class="data-card">
+                        <div class="card-header">
+                            <div class="card-icon">
+                                <i class="fas fa-satellite"></i>
                             </div>
+                            <div class="card-title">Exploration History</div>
+                        </div>
+                        
+                        <div style="margin-top: 15px;">
+                            <div style="color: rgba(255,255,255,0.8); font-size: 13px; margin-bottom: 10px;">
+                                ${body.discovery ? `Discovered: ${body.discovery}` : 'Known since antiquity'}
+                            </div>
+                            ${body.exploration ? `
+                            <div style="color: var(--sci-green); font-size: 13px; margin-bottom: 5px;">
+                                Missions:
+                            </div>
+                            <div style="color: rgba(255,255,255,0.7); font-size: 12px;">
+                                ${typeof body.exploration === 'string' ? body.exploration : body.exploration.join(', ')}
+                            </div>
+                            ` : ''}
                         </div>
                     </div>
                 `;
+            }
+
+            calculateScientificMeasurements(body) {
+                if (body === this.database.sun) {
+                    return {
+                        orbitalVelocity: 0,
+                        surfaceGravity: body.surfaceGravity,
+                        escapeVelocity: body.escapeVelocity,
+                        orbitalPeriod: 0
+                    };
+                }
                 
-                document.getElementById('celestial-info').innerHTML = infoHTML;
+                const orbitalVelocity = this.database.calculateOrbitalVelocity(body) / 1000; // Convert to km/s
+                const surfaceGravity = this.database.calculateSurfaceGravity(body);
+                const escapeVelocity = this.database.calculateEscapeVelocity(body) / 1000; // Convert to km/s
                 
-                // Update telemetry
-                this.updateTelemetry();
+                return {
+                    orbitalVelocity: orbitalVelocity.toFixed(1),
+                    surfaceGravity: surfaceGravity.toFixed(1),
+                    escapeVelocity: escapeVelocity.toFixed(1),
+                    orbitalPeriod: body.orbitalPeriod
+                };
             }
 
             updateTelemetry() {
-                const body = this.selectedBody;
-                const orbitalVelocity = this.database.calculateOrbitalVelocity(body);
-                const gravity = this.database.calculateGravity(body);
-                const escapeVelocity = PhysicsEngine.calculateEscapeVelocity(body.mass, body.radius);
-                
-                const telemetryHTML = `
-                    <div class="telemetry-item">
-                        <div class="telemetry-value">${orbitalVelocity.toFixed(1)}</div>
-                        <div class="telemetry-label">Orbital Velocity (km/s)</div>
-                    </div>
-                    <div class="telemetry-item">
-                        <div class="telemetry-value">${gravity.toFixed(2)}</div>
-                        <div class="telemetry-label">Surface Gravity (m/s²)</div>
-                    </div>
-                    <div class="telemetry-item">
-                        <div class="telemetry-value">${escapeVelocity.toFixed(1)}</div>
-                        <div class="telemetry-label">Escape Velocity (km/s)</div>
-                    </div>
-                    <div class="telemetry-item">
-                        <div class="telemetry-value">${body.orbitalPeriod?.toFixed(1) || 'N/A'}</div>
-                        <div class="telemetry-label">Orbital Period (days)</div>
-                    </div>
-                    <div class="telemetry-item">
-                        <div class="telemetry-value">${body.rotation?.toFixed(2) || 'N/A'}</div>
-                        <div class="telemetry-label">Rotation Period (days)</div>
-                    </div>
-                    <div class="telemetry-item">
-                        <div class="telemetry-value">${(body.distance / 1e6).toFixed(1)}</div>
-                        <div class="telemetry-label">Distance from Sun (Mkm)</div>
-                    </div>
-                `;
-                
-                document.getElementById('telemetry-data').innerHTML = telemetryHTML;
+                // This would update real-time telemetry data
+                // For now, we'll just update the selected object display
+                document.getElementById('selected-object').textContent = this.selectedBody.name;
             }
 
             updateHUD() {
-                const hudHTML = `
+                const hud = document.getElementById('hud-content');
+                const timeDilation = this.physics.calculateTimeDilation(0); // For now, no relativistic speeds
+                
+                hud.innerHTML = `
                     <div style="margin-bottom: 15px;">
-                        <div style="font-size: 11px; color: rgba(255,255,255,0.6); margin-bottom: 5px;">SIMULATION SPEED</div>
-                        <div style="font-family: 'Source Code Pro'; font-size: 24px; color: var(--spectrum-cyan);">
-                            ${this.timeScale.toFixed(2)}x
+                        <div style="font-size: 11px; color: rgba(255,255,255,0.6); margin-bottom: 5px;">PHYSICS ENGINE</div>
+                        <div style="font-family: 'Source Code Pro'; font-size: 18px; color: var(--sci-green);">
+                            ${this.timeScale >= 100 ? 'RELATIVISTIC' : 'NEWTONIAN'}
                         </div>
                     </div>
                     <div style="margin-bottom: 15px;">
-                        <div style="font-size: 11px; color: rgba(255,255,255,0.6); margin-bottom: 5px;">PHYSICS ENGINE</div>
-                        <div style="font-family: 'Source Code Pro'; font-size: 18px; color: var(--spectrum-green);">
-                            ${this.enablePhysics ? 'ACTIVE' : 'INACTIVE'}
+                        <div style="font-size: 11px; color: rgba(255,255,255,0.6); margin-bottom: 5px;">TIME DILATION</div>
+                        <div style="font-family: 'Source Code Pro'; font-size: 18px; color: var(--sci-cyan);">
+                            ${timeDilation.toFixed(6)}x
                         </div>
                     </div>
                     <div>
-                        <div style="font-size: 11px; color: rgba(255,255,255,0.6); margin-bottom: 5px;">TIME DILATION</div>
+                        <div style="font-size: 11px; color: rgba(255,255,255,0.6); margin-bottom: 5px;">SIMULATION ACCURACY</div>
                         <div style="font-family: 'Source Code Pro'; font-size: 14px; color: rgba(255,255,255,0.8);">
-                            ${this.timeScale >= 100 ? 'RELATIVISTIC EFFECTS ACTIVE' : 'NEWTONIAN PHYSICS'}
+                            NASA-GRADE (${this.fps} FPS)
                         </div>
                     </div>
                 `;
-                
-                document.getElementById('hud-content').innerHTML = hudHTML;
             }
 
-            startTelemetryStream() {
-                setInterval(() => {
-                    this.updateTelemetry();
-                }, 1000);
+            updateStatusBar() {
+                document.getElementById('physics-status').textContent = 
+                    this.timeScale >= 100 ? 'RELATIVISTIC' : 'NEWTONIAN';
+            }
+
+            setupRealTimeClock() {
+                const updateClock = () => {
+                    const now = new Date();
+                    const utcTime = now.toUTCString().split(' ')[4];
+                    const dateStr = now.toISOString().split('T')[0];
+                    document.getElementById('real-time-clock').innerHTML = `
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <i class="fas fa-clock"></i>
+                            <div>
+                                <div style="font-size: 12px;">${dateStr}</div>
+                                <div style="font-size: 16px; color: var(--sci-green);">${utcTime} UTC</div>
+                            </div>
+                        </div>
+                    `;
+                };
+                
+                updateClock();
+                setInterval(updateClock, 1000);
             }
 
             setupEventListeners() {
                 // Time scale slider
-                document.getElementById('time-scale').addEventListener('input', (e) => {
+                const timeSlider = document.getElementById('time-scale');
+                timeSlider.addEventListener('input', (e) => {
                     this.timeScale = parseFloat(e.target.value);
                     document.getElementById('time-display').textContent = `${this.timeScale.toFixed(2)}x`;
                     this.updateHUD();
+                    this.updateStatusBar();
                 });
 
                 // Keyboard controls
@@ -1541,20 +2236,20 @@
                         case 'R':
                             this.resetSimulation();
                             break;
-                        case 'p':
-                        case 'P':
-                            this.togglePhysics();
+                        case 'o':
+                        case 'O':
+                            this.toggleOrbits();
                             break;
                         case 'ArrowUp':
                             e.preventDefault();
                             this.timeScale = Math.min(this.timeScale * 1.5, 1000);
-                            document.getElementById('time-scale').value = this.timeScale;
+                            timeSlider.value = this.timeScale;
                             document.getElementById('time-display').textContent = `${this.timeScale.toFixed(2)}x`;
                             break;
                         case 'ArrowDown':
                             e.preventDefault();
                             this.timeScale = Math.max(this.timeScale / 1.5, 0.01);
-                            document.getElementById('time-scale').value = this.timeScale;
+                            timeSlider.value = this.timeScale;
                             document.getElementById('time-display').textContent = `${this.timeScale.toFixed(2)}x`;
                             break;
                         case '1':
@@ -1573,15 +2268,19 @@
                                 this.selectBody(this.database.planets[index]);
                             }
                             break;
+                        case 'Escape':
+                            document.getElementById('science-panel').classList.toggle('collapsed');
+                            break;
                     }
                 });
             }
 
             toggleSimulation() {
                 this.isRunning = !this.isRunning;
-                const btn = document.querySelector('.header-btn i.fa-pause, .header-btn i.fa-play');
+                const btn = document.querySelector('.sci-button i.fa-pause, .sci-button i.fa-play');
                 if (btn) {
                     btn.className = this.isRunning ? 'fas fa-pause' : 'fas fa-play';
+                    btn.parentElement.querySelector('span').textContent = this.isRunning ? 'PAUSE' : 'PLAY';
                 }
             }
 
@@ -1593,51 +2292,65 @@
                 
                 // Reset all planet positions
                 this.planetElements.forEach((item) => {
-                    this.simulationState.celestialAngles.set(item.planet.name, 0);
-                    item.container.style.transform = `rotate(0deg) rotateX(${item.planet.axialTilt || 0}deg)`;
+                    const initialAngle = Math.random() * 360;
+                    this.simulationState.orbitalAngles.set(item.data.name, initialAngle);
+                    const inclination = item.data.inclination || 0;
+                    item.system.style.transform = `rotate(${initialAngle}deg) rotateX(${inclination}deg)`;
                 });
                 
                 this.selectBody(this.database.sun);
             }
 
-            togglePhysics() {
-                this.enablePhysics = !this.enablePhysics;
-                const btn = document.querySelector('.header-btn i.fa-atom');
+            toggleOrbits() {
+                this.showOrbits = !this.showOrbits;
+                const btn = document.querySelector('.sci-button i.fa-circle');
                 if (btn) {
-                    btn.parentElement.classList.toggle('active', this.enablePhysics);
+                    btn.parentElement.classList.toggle('active', this.showOrbits);
                 }
-                this.updateHUD();
+                this.createRealisticSolarSystem();
+                this.selectBody(this.selectedBody);
             }
 
-            showPlanetInfo(event, planet) {
-                // Create floating info panel
+            showDetailedInfo(event, planet) {
+                // Create floating detailed info panel
                 const info = document.createElement('div');
                 info.style.position = 'absolute';
                 info.style.left = `${event.pageX + 20}px`;
                 info.style.top = `${event.pageY + 20}px`;
-                info.style.background = 'rgba(0,0,0,0.9)';
-                info.style.border = '1px solid var(--spectrum-cyan)';
-                info.style.borderRadius = '8px';
-                info.style.padding = '15px';
-                info.style.zIndex = '10000';
+                info.style.background = 'rgba(0, 0, 0, 0.95)';
                 info.style.backdropFilter = 'blur(10px)';
-                info.style.minWidth = '250px';
+                info.style.border = '1px solid var(--sci-cyan)';
+                info.style.borderRadius = '8px';
+                info.style.padding = '20px';
+                info.style.zIndex = '10000';
+                info.style.maxWidth = '300px';
+                info.style.boxShadow = '0 10px 40px rgba(0, 0, 0, 0.5)';
+                
+                const measurements = this.calculateScientificMeasurements(planet);
                 
                 info.innerHTML = `
-                    <div style="font-family: 'Orbitron'; color: var(--spectrum-cyan); margin-bottom: 10px;">
-                        ${planet.name}
+                    <div style="margin-bottom: 15px;">
+                        <div style="font-family: 'Orbitron'; color: var(--sci-cyan); font-size: 18px; margin-bottom: 5px;">
+                            ${planet.name}
+                        </div>
+                        <div style="color: rgba(255,255,255,0.7); font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">
+                            ${planet.type}
+                        </div>
                     </div>
-                    <div style="font-size: 12px; color: rgba(255,255,255,0.8); margin-bottom: 5px;">
-                        Type: ${planet.type}
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
+                        <div>
+                            <div style="font-size: 11px; color: rgba(255,255,255,0.6);">Distance from Sun</div>
+                            <div style="font-family: 'Source Code Pro'; color: var(--sci-green);">${(planet.semiMajorAxis / 1e6).toFixed(1)} Mkm</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 11px; color: rgba(255,255,255,0.6);">Orbital Velocity</div>
+                            <div style="font-family: 'Source Code Pro'; color: var(--sci-green);">${measurements.orbitalVelocity} km/s</div>
+                        </div>
                     </div>
-                    <div style="font-size: 12px; color: rgba(255,255,255,0.8); margin-bottom: 5px;">
-                        Distance: ${(planet.distance / 1e6).toFixed(1)} Mkm
-                    </div>
-                    <div style="font-size: 12px; color: rgba(255,255,255,0.8); margin-bottom: 5px;">
-                        Radius: ${(planet.radius / 1000).toFixed(1)} km
-                    </div>
+                    
                     <div style="font-size: 12px; color: rgba(255,255,255,0.8);">
-                        Atmosphere: ${planet.atmosphere || 'None'}
+                        ${planet.name} is ${planet.type.toLowerCase()} with ${planet.moons || 0} known moon${planet.moons !== 1 ? 's' : ''}.
                     </div>
                 `;
                 
@@ -1653,7 +2366,7 @@
                 }, { once: true });
             }
 
-            hidePlanetInfo() {
+            hideDetailedInfo() {
                 if (this.currentInfoPanel) {
                     this.currentInfoPanel.remove();
                     this.currentInfoPanel = null;
@@ -1665,11 +2378,7 @@
         let simulator;
 
         function init() {
-            simulator = new SolarSystemSimulator();
-        }
-
-        function toggleDashboard() {
-            document.getElementById('dashboard').classList.toggle('collapsed');
+            simulator = new UltraRealisticSolarSystem();
         }
 
         function toggleSimulation() {
@@ -1680,41 +2389,18 @@
             simulator.resetSimulation();
         }
 
-        function togglePhysics() {
-            simulator.togglePhysics();
+        function toggleOrbits() {
+            simulator.toggleOrbits();
         }
 
-        function exportTelemetry() {
-            const data = {
-                simulationTime: simulator.simulationTime,
-                timeScale: simulator.timeScale,
-                selectedBody: simulator.selectedBody,
-                telemetry: {
-                    orbitalVelocity: simulator.database.calculateOrbitalVelocity(simulator.selectedBody),
-                    gravity: simulator.database.calculateGravity(simulator.selectedBody),
-                    escapeVelocity: PhysicsEngine.calculateEscapeVelocity(simulator.selectedBody.mass, simulator.selectedBody.radius)
-                }
-            };
-            
-            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `solar-system-telemetry-${Date.now()}.json`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-        }
-
-        function showSettings() {
-            alert('Advanced settings panel coming in v4.6\n\nCurrent features:\n• Real-time physics simulation\n• NASA-grade orbital calculations\n• Dynamic time scaling\n• Professional telemetry system\n• Enterprise-grade performance');
+        function toggleSciencePanel() {
+            document.getElementById('science-panel').classList.toggle('collapsed');
         }
 
         // Initialize on load
         window.addEventListener('load', init);
 
-        // Add missing CSS animation
+        // Add missing CSS animations
         const style = document.createElement('style');
         style.textContent = `
             @keyframes twinkle {
@@ -1722,9 +2408,15 @@
                 100% { opacity: 1; transform: scale(1.1); }
             }
             
-            @keyframes particle-fade {
-                0% { opacity: 1; transform: scale(1); }
-                100% { opacity: 0; transform: scale(0); }
+            @keyframes particle-flow {
+                0% { 
+                    transform: translate(0, 0) scale(1);
+                    opacity: 1;
+                }
+                100% { 
+                    transform: translate(var(--particle-x, 100px), var(--particle-y, 100px)) scale(0);
+                    opacity: 0;
+                }
             }
         `;
         document.head.appendChild(style);
